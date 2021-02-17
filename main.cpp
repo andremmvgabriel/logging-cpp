@@ -37,12 +37,14 @@ inline Time operator & (Time time1, Time time2) {
     using T = std::underlying_type_t<Time>;
     return static_cast<Time>( static_cast<T>(time1) & static_cast<T>(time2) );
 }
+
 inline Time operator &= (Time time1, Time time2) { return (time1 & time2); }
 
 inline Time operator | (Time time1, Time time2) { 
     using T = std::underlying_type_t<Time>;
     return static_cast<Time>( static_cast<T>(time1) | static_cast<T>(time2) );
 }
+
 inline Time operator |= (Time time1, Time time2) { return (time1 & time2); }
 
 
@@ -52,6 +54,15 @@ private:
     std::ofstream file;
 
     std::unordered_map<Severity, std::ofstream> log_files;
+
+    std::unordered_map<Severity, std::string> severity_levels {
+        {Severity::TRACE, "[trace]"},
+        {Severity::DEBUG, "[debug]"},
+        {Severity::INFO, "[info]"},
+        {Severity::WARNING, "[warning]"},
+        {Severity::ERROR, "[error]"},
+        {Severity::FATAL, "[fatal]"}
+    };
 
     bool individual_logs = false;
 
@@ -89,7 +100,7 @@ private:
 
         if (time & Time::HOUR) {
             log_message += "[";
-            log_message += (hour_t < 10 ? "0" + std::to_string(hour_t): std::to_string(hour_t)) ;
+            log_message += (hour_t < 10 ? "0" + std::to_string(hour_t): std::to_string(hour_t));
             log_message += ":";
             log_message += (min_t < 10 ? "0" + std::to_string(min_t) : std::to_string(min_t));
             log_message += ":";
@@ -119,17 +130,9 @@ public:
 
             checkTime(log);
 
-            switch (severity)
-            {
-            case Severity::INFO:
-                log += "[info]";
-                break;
-            
-            default:
-                break;
-            }
+            log += severity_levels.at(severity);
 
-            log += " " + message;
+            log += " " + message + "\n";
 
             file.write (log.c_str(), log.size());
         }
@@ -143,7 +146,12 @@ int main(int argc, char* argv[])
 
     logger.init();
 
+    logger.writeLog(Severity::TRACE, "Testing TRACE log.");
+    logger.writeLog(Severity::DEBUG, "Testing DEBUG log.");
     logger.writeLog(Severity::INFO, "Testing INFO log.");
+    logger.writeLog(Severity::WARNING, "Testing WARNING log.");
+    logger.writeLog(Severity::ERROR, "Testing ERROR log.");
+    logger.writeLog(Severity::FATAL, "Testing FATAL log.");
 
     return 0;
 }

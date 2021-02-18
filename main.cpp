@@ -47,7 +47,6 @@ inline Time operator | (Time time1, Time time2) {
 
 inline Time operator |= (Time time1, Time time2) { return (time1 & time2); }
 
-
 class Logger
 {
 private:
@@ -73,6 +72,8 @@ private:
 
     std::time_t local_time = std::time(nullptr);
 
+    std::string iteration_buffer;
+
 private:
     void checkLogsDirectory() {
         // Stablishes the logs directory
@@ -86,7 +87,7 @@ private:
         file = std::ofstream("../logs/log_file.txt", std::ios::out);
     }
 
-    void checkTime(std::string &log_message) {
+    void writeTime(std::string &log_message) {
         if (time == Time::NONE) { return; }
 
         std::time_t myTime = std::time(nullptr);
@@ -107,8 +108,10 @@ private:
             log_message += (sec_t < 10 ? "0" + std::to_string(sec_t) : std::to_string(sec_t));
             log_message += "]";
         }
-
-        //log += "%d : %d : %d";
+    }
+    
+    void writeSeverity(std::string &log_message, Severity severity) {
+        log_message += severity_levels.at(severity);
     }
 
 public:
@@ -128,9 +131,9 @@ public:
         if (working) {
             std::string log;
 
-            checkTime(log);
+            writeTime(log);
 
-            log += severity_levels.at(severity);
+            writeSeverity(log, severity);
 
             log += " " + message + "\n";
 
@@ -152,6 +155,13 @@ int main(int argc, char* argv[])
     logger.writeLog(Severity::WARNING, "Testing WARNING log.");
     logger.writeLog(Severity::ERROR, "Testing ERROR log.");
     logger.writeLog(Severity::FATAL, "Testing FATAL log.");
+
+    std::string test;
+    for (int i = 0; i < 84; i++) {
+        test += std::to_string( i % 2 );
+    }
+
+    logger.writeLog(Severity::INFO, test);
 
     return 0;
 }

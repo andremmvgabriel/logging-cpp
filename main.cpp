@@ -173,7 +173,15 @@ private:
     int current_log_file = 0;
 
     std::unordered_map<Severity, std::ofstream> log_files;
-    std::unordered_map<Severity, int> current_log_files;
+
+    std::unordered_map<Severity, int> current_log_files {
+        {Severity::TRACE, 0},
+        {Severity::DEBUG, 0},
+        {Severity::INFO, 0},
+        {Severity::WARNING, 0},
+        {Severity::ERROR, 0},
+        {Severity::FATAL, 0}
+    };
 
     std::unordered_map<Severity, std::string> severity_levels {
         {Severity::TRACE, "[trace]"},
@@ -184,7 +192,6 @@ private:
         {Severity::FATAL, "[fatal]"}
     };
 
-    bool individual_logs = false;
     bool working = false;
 
     DefaultSettings settings {
@@ -210,13 +217,36 @@ private:
     }
 
     void openLogFile() {
+        // Closes the previous log file, if opened
+        if (log_file.is_open()) { log_file.close(); }
+
         // Increments the file counter
         current_log_file++;
 
+        // Opens the file
         log_file = std::ofstream(
             settings.logs_directory +
             settings.base_file_name +
             std::to_string(current_log_file) +
+            ".txt", std::ios::out
+        );
+    }
+
+    void openLogFile(Severity severity) {
+        // Closes the previous log file, if opened
+        if (log_files[severity].is_open()) { log_files.at(severity).close(); }
+
+        // Increments the file counter
+        current_log_files.at(severity)++;
+
+        // Opens the file
+        log_files.at(severity) = std::ofstream(
+            settings.logs_directory +
+            settings.base_file_name +
+            "_" +
+            severity_levels.at(severity) +
+            "_" +
+            std::to_string( current_log_files.at(severity) ) +
             ".txt", std::ios::out
         );
     }
@@ -291,13 +321,27 @@ private:
     }
 
     void checkFileSize() {
-        // Checks if the current log file has already reached the maximum size
-        if (log_file.tellp() >= settings.max_file_size) {
-            // Closes the current log file
-            log_file.close();
-
-            // Opens a new log file
-            openLogFile();
+        // Checks if there are files for individual severities or not
+        if (settings.individual_files) {
+            if (log_files.at(Severity::TRACE).tellp() >= settings.max_file_size)
+                openLogFile(Severity::TRACE);
+            if (log_files.at(Severity::DEBUG).tellp() >= settings.max_file_size)
+                openLogFile(Severity::DEBUG);
+            if (log_files.at(Severity::INFO).tellp() >= settings.max_file_size)
+                openLogFile(Severity::INFO);
+            if (log_files.at(Severity::WARNING).tellp() >= settings.max_file_size)
+                openLogFile(Severity::WARNING);
+            if (log_files.at(Severity::ERROR).tellp() >= settings.max_file_size)
+                openLogFile(Severity::ERROR);
+            if (log_files.at(Severity::FATAL).tellp() >= settings.max_file_size)
+                openLogFile(Severity::FATAL);
+        }
+        else {
+            // Checks if the current log file has already reached the maximum size
+            if (log_file.tellp() >= settings.max_file_size) {
+                // Opens a new log file
+                openLogFile();
+            }
         }
     }
 
@@ -311,7 +355,19 @@ public:
 
     void init(bool individualLogs = false) {
         checkLogsDirectory();
-        openLogFile();
+
+        if (settings.individual_files) {
+            openLogFile(Severity::TRACE);
+            openLogFile(Severity::DEBUG);
+            openLogFile(Severity::INFO);
+            openLogFile(Severity::WARNING);
+            openLogFile(Severity::ERROR);
+            openLogFile(Severity::FATAL);
+        }
+        else {
+            openLogFile();
+        }
+        
         working = true;
     }
 
@@ -324,7 +380,7 @@ public:
         }
     }
 
-    // For ints / enums
+    // For ints / bools / enums
     void setSettings(Settings setting, int value) {
         switch (setting)
         {
@@ -332,6 +388,7 @@ public:
             case Settings::LINE_SIZE: settings.max_line_size = value; break;
             case Settings::TIME_REP: settings.time_representation = (Time)value; break;
             case Settings::LOG_PATT: settings.logging_pattern = (LoggingPattern)value; break;
+            case Settings::IND_FILES: settings.individual_files = (bool)value; break;
             default: writeLog(Severity::WARNING, "Setting not recognized."); break;
         }
     }
@@ -363,7 +420,12 @@ public:
 
             log += '\n';
 
-            log_file.write (log.c_str(), log.size());
+            if (settings.individual_files) {
+                log_files.at(severity).write(log.c_str(), log.size());
+            }
+            else {
+                log_file.write (log.c_str(), log.size());
+            }            
 
             checkFileSize();
         }

@@ -21,7 +21,7 @@ enum class Severity
     FATAL   = 32
 };
 
-enum class LoggingPattern
+enum LoggingPattern
 {
     SEV_MSG         = 0,
     TIME_SEV_MSG    = 1,
@@ -143,10 +143,12 @@ private:
     struct DefaultSettings
     {
         std::string logs_directory;
+        std::string base_file_name;
         int max_file_size;
         int max_line_size;
         Time time_representation;
         LoggingPattern logging_pattern;
+        bool individual_files;
     };
 
     class LoggerIterator
@@ -157,17 +159,21 @@ private:
 public:
     enum class Settings
     {
-        LOG_DIR     = 0,
-        FILE_SIZE   = 1,
-        LINE_SIZE   = 2,
-        TIME_REP    = 4,
-        LOG_PATT    = 8
+        LOG_DIR,
+        FILE_NAME,
+        FILE_SIZE,
+        LINE_SIZE,
+        TIME_REP,
+        LOG_PATT,
+        IND_FILES
     };
 
 private:
-    std::ofstream file;
+    std::ofstream log_file;
+    int current_log_file = 0;
 
     std::unordered_map<Severity, std::ofstream> log_files;
+    std::unordered_map<Severity, int> current_log_files;
 
     std::unordered_map<Severity, std::string> severity_levels {
         {Severity::TRACE, "[trace]"},
@@ -181,20 +187,20 @@ private:
     bool individual_logs = false;
     bool working = false;
 
-    int current_log_file = 0;
-
     DefaultSettings settings {
         "../logs/", // Logs directory
+        "log_file", // Logs base file name
         500, // Max file size (in bytes)
         66, // Max line size
         Time::TIME,
-        LoggingPattern::SEV_MSG
+        LoggingPattern::SEV_MSG,
+        false // One log for all severities
     };
 
 private:
     void checkLogsDirectory() {
         // Stablishes the logs directory
-        boost::filesystem::path log_directory("../logs");
+        boost::filesystem::path log_directory(settings.logs_directory);
 
         // Removes any logs if any exist
         boost::filesystem::remove_all(log_directory);
@@ -207,7 +213,12 @@ private:
         // Increments the file counter
         current_log_file++;
 
-        file = std::ofstream("../logs/log_file" + std::to_string(current_log_file) + ".txt", std::ios::out);
+        log_file = std::ofstream(
+            settings.logs_directory +
+            settings.base_file_name +
+            std::to_string(current_log_file) +
+            ".txt", std::ios::out
+        );
     }
 
     std::string getTime() {
@@ -281,9 +292,9 @@ private:
 
     void checkFileSize() {
         // Checks if the current log file has already reached the maximum size
-        if (file.tellp() >= settings.max_file_size) {
+        if (log_file.tellp() >= settings.max_file_size) {
             // Closes the current log file
-            file.close();
+            log_file.close();
 
             // Opens a new log file
             openLogFile();
@@ -295,7 +306,7 @@ private:
 public:
     Logger() {}
     ~Logger() {
-        if(file.is_open()) { file.close(); }
+        if(log_file.is_open()) { log_file.close(); }
     }
 
     void init(bool individualLogs = false) {
@@ -304,43 +315,24 @@ public:
         working = true;
     }
 
-    template<typename T>
-    void setSettings(Settings setting, T value) {
+    // For strings
+    void setSettings(Settings setting, std::string value) {
         switch (setting)
         {
-            case Settings::LOG_DIR:
-                if( typeid(T) == typeid(settings.logging_pattern)) {
-                    settings.logs_directory = (char*)value;
-                }
-                else { writeLog(Severity::ERROR, "Setting LOG_DIR was given in an incorrect type. Previous setting remains unchanged."); }
-                break;
-            case Settings::FILE_SIZE:
-                if( typeid(T) == typeid(settings.max_file_size)) {
-                    settings.max_file_size = (int)value;
-                }
-                else { writeLog(Severity::ERROR, "Setting FILE_SIZE was given in an incorrect type. Previous setting remains unchanged."); }
-                break;
-            case Settings::LINE_SIZE:
-                if( typeid(T) == typeid(settings.max_line_size)) {
-                    settings.max_line_size = (int)value;
-                }
-                else { writeLog(Severity::ERROR, "Setting LINE_SIZE was given in an incorrect type. Previous setting remains unchanged."); }
-                break;
-            case Settings::TIME_REP:
-                if( typeid(T) == typeid(settings.time_representation)) {
-                    settings.time_representation = (Time)value;
-                }
-                else { writeLog(Severity::ERROR, "Setting TIME_REPRESENTATION was given in an incorrect type. Previous setting remains unchanged."); }
-                break;
-            case Settings::LOG_PATT:
-                if( typeid(T) == typeid(settings.logging_pattern)) {
-                    settings.logging_pattern = (LoggingPattern)value;
-                }
-                else { writeLog(Severity::ERROR, "Setting LOGGING_PATTERN was given in an incorrect type. Previous setting remains unchanged."); }
-                break;
-            default:
-                writeLog(Severity::ERROR, "Setting not recognized.");
-                break;
+            case Settings::LOG_DIR: settings.logs_directory = value; break;
+            case Settings::FILE_NAME: settings.base_file_name = value; break;
+        }
+    }
+
+    // For ints / enums
+    void setSettings(Settings setting, int value) {
+        switch (setting)
+        {
+            case Settings::FILE_SIZE: settings.max_file_size = value; break;
+            case Settings::LINE_SIZE: settings.max_line_size = value; break;
+            case Settings::TIME_REP: settings.time_representation = (Time)value; break;
+            case Settings::LOG_PATT: settings.logging_pattern = (LoggingPattern)value; break;
+            default: writeLog(Severity::WARNING, "Setting not recognized."); break;
         }
     }
 
@@ -371,7 +363,7 @@ public:
 
             log += '\n';
 
-            file.write (log.c_str(), log.size());
+            log_file.write (log.c_str(), log.size());
 
             checkFileSize();
         }
@@ -400,7 +392,7 @@ void someDummyProcess(Logger &logger) {
 int main(int argc, char* argv[])
 {
     Logger logger;
-
+    
     logger.init();
 
     logger.writeLog(Severity::TRACE, "Testing TRACE log.");

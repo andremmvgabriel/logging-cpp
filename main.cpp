@@ -21,7 +21,7 @@ enum class Severity
     FATAL   = 32
 };
 
-enum LoggingPattern
+enum class LoggingPattern
 {
     SEV_MSG         = 0,
     TIME_SEV_MSG    = 1,
@@ -147,6 +147,11 @@ private:
         int max_line_size;
         Time time_representation;
         LoggingPattern logging_pattern;
+    };
+
+    class LoggerIterator
+    {
+    
     };
 
 public:
@@ -299,9 +304,6 @@ public:
         working = true;
     }
 
-    template<typename T, Settings S>
-    void setSettings(T value) {}
-
     template<typename T>
     void setSettings(Settings setting, T value) {
         switch (setting)
@@ -310,31 +312,31 @@ public:
                 if( typeid(T) == typeid(settings.logging_pattern)) {
                     settings.logs_directory = (char*)value;
                 }
-                else { writeLog(Severity::ERROR, "Setting LOG_DIR was given in an incorrect type."); }
+                else { writeLog(Severity::ERROR, "Setting LOG_DIR was given in an incorrect type. Previous setting remains unchanged."); }
                 break;
             case Settings::FILE_SIZE:
                 if( typeid(T) == typeid(settings.max_file_size)) {
                     settings.max_file_size = (int)value;
                 }
-                else { writeLog(Severity::ERROR, "Setting FILE_SIZE was given in an incorrect type."); }
+                else { writeLog(Severity::ERROR, "Setting FILE_SIZE was given in an incorrect type. Previous setting remains unchanged."); }
                 break;
             case Settings::LINE_SIZE:
                 if( typeid(T) == typeid(settings.max_line_size)) {
                     settings.max_line_size = (int)value;
                 }
-                else { writeLog(Severity::ERROR, "Setting LINE_SIZE was given in an incorrect type."); }
+                else { writeLog(Severity::ERROR, "Setting LINE_SIZE was given in an incorrect type. Previous setting remains unchanged."); }
                 break;
             case Settings::TIME_REP:
                 if( typeid(T) == typeid(settings.time_representation)) {
                     settings.time_representation = (Time)value;
                 }
-                else { writeLog(Severity::ERROR, "Setting TIME_REPRESENTATION was given in an incorrect type."); }
+                else { writeLog(Severity::ERROR, "Setting TIME_REPRESENTATION was given in an incorrect type. Previous setting remains unchanged."); }
                 break;
             case Settings::LOG_PATT:
                 if( typeid(T) == typeid(settings.logging_pattern)) {
                     settings.logging_pattern = (LoggingPattern)value;
                 }
-                else { writeLog(Severity::ERROR, "Setting LOGGING_PATTERN was given in an incorrect type."); }
+                else { writeLog(Severity::ERROR, "Setting LOGGING_PATTERN was given in an incorrect type. Previous setting remains unchanged."); }
                 break;
             default:
                 writeLog(Severity::ERROR, "Setting not recognized.");
@@ -424,3 +426,37 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+/*
+Haps Simulator
+
+[Article] https://ieeexplore.ieee.org/document/8396531  -> Modelica OOP? "The acausal and object-oriented modeling language Modelica has been used to create the integrated simulation model, enabling a modular and detailed modeling approach."
+
+Será isto?
+https://www.simulationx.com/simulation-software/experts/modelica-simulation.html
+https://openmodelica.org/uncategorised/191-omsimulator
+
+
+[Web Site] https://www.atlanticmicrowave.com/application/haps-high-altitude-pseudo-satellite-testing
+https://www.atlanticmicrowave.com/news/2021/02/bench-mounted-satellite-simulator-equipment
+https://www.atlanticmicrowave.com/markets/satellite-communications
+
+Sao apenas produtos/hardware que se pode comprar para simular?
+
+
+Drones Simulator -> The best ones are paid, and are not opensource...
+
+[Software] https://www.dji.com/pt/simulator  -> uff
+
+[Software] https://zephyr-sim.com/ -> Zephyr
+
+[GitHub OPENSOURCE!!] https://github.com/microsoft/AirSim -> You would have to understand the code to manage whatever else you want.
+
+Other opensources... But not smelling that good... https://opensource.com/article/18/2/drone-projects
+
+
+Last resource...
+Develop a simulation on Unity / Unreal Engine 4.
+
+
+*/

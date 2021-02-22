@@ -2,19 +2,34 @@
 
 #include "Logger.hpp"
 
-void someDummyProcess(Logger &logger) {
+/* void someDummyProcess(Logging::Logger &logger) {
     int wait = rand() % 5;
     sleep(wait);
     logger.writeLog(Severity::INFO, "Just a message " + std::to_string(wait) + " seconds later.");
-}
+} */
 
 int main(int argc, char* argv[])
 {
-    Logger logger;
+    Logging::Logger logger;
+
+    Logging::Edit::Settings settings {
+        "logs/",
+        "my_log_file",
+        50,
+        45,
+        true,
+        Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
+        Logging::Edit::LogTemplate::SEV_MSG_TIME
+    };
     
+    logger.setSettings(settings);
+
     logger.init();
 
-    logger.writeLog(Severity::TRACE, "Testing TRACE log.");
+    logger.log_info("This is just a INFO test message.");
+    logger.log_info("This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed!");
+
+    /* logger.writeLog(Severity::TRACE, "Testing TRACE log.");
     logger.writeLog(Severity::DEBUG, "Testing DEBUG log.");
     logger.writeLog(Severity::INFO, "Testing INFO log.");
     logger.writeLog(Severity::WARNING, "Testing WARNING log.");
@@ -29,16 +44,16 @@ int main(int argc, char* argv[])
     logger.writeLog(Severity::INFO, test);
 
     logger.writeLog("This is just a header");
-    logger.writeLog(Severity::INFO, "Message after the header.");
+    logger.writeLog(Severity::INFO, "Message after the header."); */
 
-    someDummyProcess(logger);
+    /* someDummyProcess(logger);
 
     logger.writeLog(Severity::TRACE, __function__);
 
     logger.writeLog(Severity::DEBUG, "She had been an angel for coming up on 10 years and in all that time nobody had told her this was possible. The fact that it could ever happen never even entered her mind. Yet there she stood, with the undeniable evidence sitting on the ground before her. Angels could lose their wings.");
 
     std::string somethingRandom = "She had been an angel for coming up on 10 years and in all that time nobody had told her this was possible. The fact that it could ever happen never even entered her mind. Yet there she stood, with the undeniable evidence sitting on the ground before her. Angels could lose their wings.";
-
+ */
 
     /* logger.beginIterationLog("Dividing the phrase.");
     int prevPos = 0;

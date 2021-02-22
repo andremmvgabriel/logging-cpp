@@ -10,79 +10,147 @@
 #include <ctime>
 #include <chrono>
 
+#include <mutex>
+
 #include <type_traits>
 
 #include "TextUtils.hpp"
 
 #define __function__ BOOST_CURRENT_FUNCTION
 
-enum class Severity
+namespace Logging
 {
-    TRACE   = 1,
-    DEBUG   = 2,
-    INFO    = 4,
-    WARNING = 8,
-    ERROR   = 16,
-    FATAL   = 32
-};
+    enum class Severity
+    {
+        TRACE   = 1,
+        DEBUG   = 2,
+        INFO    = 4,
+        WARNING = 8,
+        ERROR   = 16,
+        FATAL   = 32
+    };
 
-enum LoggingPattern
-{
-    SEV_MSG         = 0,
-    TIME_SEV_MSG    = 1,
-    SEV_TIME_MSG    = 2,
-    SEV_MSG_TIME    = 4
-};
+    namespace Utils
+    {
+        namespace Dictionary
+        {
+            static std::unordered_map<int, std::string> months {
+                {0, "Jan"},
+                {1, "Feb"},
+                {2, "Mar"},
+                {3, "Apr"},
+                {4, "May"},
+                {5, "Jun"},
+                {6, "Jul"},
+                {7, "Ago"},
+                {8, "Sep"},
+                {9, "Oct"},
+                {10, "Nov"},
+                {11, "Dec"}
+            };
 
-enum Time
-{
-    NONE    = 0,
-    TIME    = 1,
-    DAY     = 2,
-    WEEK    = 4,
-    MONTH   = 8,
-    YEAR    = 16
-};
+            static std::unordered_map<int, std::string> week_days {
+                {0, "Sun"},
+                {1, "Mon"},
+                {2, "Tue"},
+                {3, "Wed"},
+                {4, "Thu"},
+                {5, "Fri"},
+                {6, "Sat"}
+            };
 
-inline Time operator & (Time time1, Time time2) { 
-    using T = std::underlying_type_t<Time>;
-    return static_cast<Time>( static_cast<T>(time1) & static_cast<T>(time2) );
-}
+            static std::unordered_map<Severity, std::string> severity_levels {
+                {Severity::TRACE, "[trace]"},
+                {Severity::DEBUG, "[debug]"},
+                {Severity::INFO, "[info]"},
+                {Severity::WARNING, "[warning]"},
+                {Severity::ERROR, "[error]"},
+                {Severity::FATAL, "[fatal]"}
+            };
+        } // namespace Dictionary        
+    } // namespace Utils
 
-inline Time operator &= (Time time1, Time time2) { return (time1 & time2); }
+    namespace Edit
+    {
+        enum class Setting
+        {
+            LOGS_DIRECTORY,
+            FILE_NAME,
+            FILE_SIZE,
+            LINE_SIZE,
+            TIME_TEMPLATE,
+            LOG_TEMPLATE
+        };
 
-inline Time operator | (Time time1, Time time2) { 
-    using T = std::underlying_type_t<Time>;
-    return static_cast<Time>( static_cast<T>(time1) | static_cast<T>(time2) );
-}
+        enum class LogTemplate
+        {
+            SEV_MSG         = 0,    // [Severity] Message
+            TIME_SEV_MSG    = 1,    // [Time][Severity] Message
+            SEV_TIME_MSG    = 2,    // [Severity][Time] Message
+            SEV_MSG_TIME    = 4     // [Severity] Message [Time]
+        };
+        
+        enum class TimestampTemplate
+        {
+            NONE,
+            TIME,
+            CALENDAR_TIME,
+            CALENDAR_YEAR_TIME,
+        };
 
-inline Time operator |= (Time time1, Time time2) { return (time1 & time2); }
+        struct Settings
+        {
+            std::string logs_directory;
+            std::string file_name;
+            int max_file_size;
+            int max_line_size;
+            bool allow_multiple_line_logs;
+            TimestampTemplate timestamp_template;
+            LogTemplate log_template;
+        };
+    } // namespace Edit
+    
+    
+    class Logger
+    {
+    private:
+        bool isWorking = false;
+        std::mutex logMutex;
 
-std::unordered_map<int, std::string> months_map {
-    {0, "Jan"},
-    {1, "Feb"},
-    {2, "Mar"},
-    {3, "Apr"},
-    {4, "May"},
-    {5, "Jun"},
-    {6, "Jul"},
-    {7, "Ago"},
-    {8, "Sep"},
-    {9, "Oct"},
-    {10, "Nov"},
-    {11, "Dec"}
-};
+        std::ofstream log_file;
+        int counter_log_files = 0;
 
-std::unordered_map<int, std::string> weeks_map {
-    {0, "Sun"},
-    {1, "Mon"},
-    {2, "Tue"},
-    {3, "Wed"},
-    {4, "Thu"},
-    {5, "Fri"},
-    {6, "Sat"}
-};
+        Edit::Settings defaultSettings = {
+            "logs/", // Logs directory
+            "log_file", // Logs base file name
+            500, // Max file size (in bytes)
+            66, // Max line size - 66 characters
+            true, // Allow logs for multiple lines
+            Edit::TimestampTemplate::TIME, // Show only time
+            Edit::LogTemplate::SEV_MSG, // Log as Severity + Message
+        };
+    
+    public: // To private
+        bool checkLogsDirectory();
+        bool openLogFile();
+        void checkLogFileSize();
 
+        std::string makeTimestamp();
+
+    public:
+        Logger();
+        ~Logger();
+
+        void init();
+
+        void setSettings(Edit::Setting setting);
+        void setSettings(Edit::Settings settings);
+
+        void log_info(std::string message);
+    };
+} // namespace Logging
+
+/* 
 class Logger
 {
 private:
@@ -159,8 +227,8 @@ private:
         "log_file", // Logs base file name
         500, // Max file size (in bytes)
         66, // Max line size
-        Time::TIME,
-        LoggingPattern::SEV_MSG,
+        Time::TIME, // Show only time
+        LoggingPattern::SEV_MSG, // Log as Severity + Message
         false // One log for all severities
     };
 
@@ -272,14 +340,6 @@ private:
         return current_time;
     }
 
-    void writeTime(std::string &log_message) {
-        log_message += getTime();
-    }
-    
-    void writeSeverity(std::string &log_message, Severity severity) {
-        log_message += severity_levels.at(severity);
-    }
-
     void checkFileSize() {
         // Checks if there are files for individual severities or not
         if (settings.individual_files) {
@@ -304,8 +364,6 @@ private:
             }
         }
     }
-
-    //void startTimer
 
 public:
     Logger() {}
@@ -408,6 +466,22 @@ public:
         }
     }
 
+    enum class TextTemplate
+    {
+        HEADER
+    };
+
+    template<typename T>
+    void log_trace() {
+
+    }
+    
+    void log_debug() {}
+    void log_info() {}
+    void log_warning() {}
+    void log_error() {}
+    void log_fatal() {}
+
     void writeLog(std::string header) {
         if (working) {
             std::string log_init, log_end;
@@ -430,4 +504,4 @@ public:
     void endIterationLog() {
 
     }
-};
+}; */

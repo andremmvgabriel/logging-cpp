@@ -2,11 +2,11 @@
 
 #include "Logger.hpp"
 
-/* void someDummyProcess(Logging::Logger &logger) {
+void someDummyProcess(Logging::Logger &logger) {
     int wait = rand() % 5;
     sleep(wait);
-    logger.writeLog(Severity::INFO, "Just a message " + std::to_string(wait) + " seconds later.");
-} */
+    logger.write_log(Logging::Severity::INFO, "Just a message " + std::to_string(wait) + " seconds later.");
+}
 
 int main(int argc, char* argv[])
 {
@@ -52,6 +52,8 @@ int main(int argc, char* argv[])
     logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, false);
     logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, true);
     logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::NONE);
+
+    someDummyProcess(logger);
 
     return 0;
 }

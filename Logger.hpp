@@ -168,6 +168,26 @@ namespace Logging
         Logger();
         ~Logger();
 
+        // Disable copy constructor
+        Logger(const Logger& logger) = delete;
+
+        // Disable copy assignment
+        Logger& operator= (const Logger& logger) = delete;
+
+        // New copy constructor
+        Logger (Logger&& logger) {
+            log_file.close();
+            log_file = std::move(logger.log_file);
+        }
+
+        // New copy assignment
+        Logger& operator= (Logger&& logger) {
+            log_file.close();
+            log_file = std::move(logger.log_file);
+
+            return *this;
+        }
+
         void init();
 
         // Overload setSetting for strings
@@ -188,6 +208,9 @@ namespace Logging
         void write_log(Severity severity, const std::string &message)
         {
             if (isWorking) {
+                // Locks with the mutex
+                std::lock_guard<std::mutex> lock(logMutex);
+
                 // Creates the three log parts
                 std::string initiation, termination;
 

@@ -98,6 +98,13 @@ namespace Logging
             CALENDAR_YEAR_TIME,
         };
 
+        enum class TextType
+        {
+            HEADER,
+            SUB_HEADER,
+            NORMAL
+        };
+
         struct Settings
         {
             std::string logs_directory;
@@ -130,7 +137,7 @@ namespace Logging
             Edit::LogTemplate::SEV_MSG, // Log as Severity + Message
         };
     
-    public: // To private
+    private:
         bool checkLogsDirectory();
         bool openLogFile();
         void checkLogFileSize();
@@ -146,362 +153,289 @@ namespace Logging
         void setSettings(Edit::Setting setting);
         void setSettings(Edit::Settings settings);
 
-        void log_info(std::string message);
+        template <Edit::TextType TT = Edit::TextType::NORMAL>
+        void write_log(Severity severity, std::string message)
+        {
+            if (isWorking) {
+                // Creates the three log parts
+                std::string initiation, middle, termination;
+
+                // Checks if the log template has the time in the beginning
+                if (defaultSettings.log_template == Logging::Edit::LogTemplate::TIME_SEV_MSG) {
+                    // Adds the timestamp
+                    initiation += makeTimestamp();
+                }
+
+                // Adds the severity level
+                initiation += Utils::Dictionary::severity_levels.at(severity);
+
+                // Checks if the log has the time after the severity
+                if (defaultSettings.log_template == Logging::Edit::LogTemplate::SEV_TIME_MSG) {
+                    // Adds the timestamp
+                    initiation += makeTimestamp();
+                }
+
+                // Checks if the log has the time after the message
+                if (defaultSettings.log_template == Logging::Edit::LogTemplate::SEV_MSG_TIME) {
+                    // Adds the timestamp
+                    termination += " " + makeTimestamp();
+                }
+
+                // Adds the end line
+                termination += "\n";
+
+                if (TT == Edit::TextType::HEADER) {
+                    std::string empty_message = initiation + " ", separator = initiation + " ";
+
+                    for (int i = 0; i < defaultSettings.max_line_size; i++) {
+                        empty_message.push_back(' ');
+                        separator.push_back('*');
+                    }
+
+                    empty_message += termination;
+                    separator += termination;
+
+                    log_file.write(empty_message.c_str(), empty_message.size());
+                    log_file.write(separator.c_str(), separator.size());
+                }
+
+                // Makes sure the user allows multiple lines for a single log
+                if (defaultSettings.allow_multiple_line_logs) {
+                    // Writes the logs
+                    int writting = true;
+                    while (writting) {
+                        std::string curLog = initiation;
+
+                        // Adds a separation
+                        curLog += " ";
+
+                        if (TT == Edit::TextType::SUB_HEADER) {
+                            if (message.size() > defaultSettings.max_line_size - 8) {
+                                curLog += "~~~ ";
+                                curLog.insert(curLog.end(), message.begin(), message.begin() + defaultSettings.max_line_size - 8);
+
+                                curLog += " ~~~";
+
+                                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size - 8);
+                            }
+                            else {
+                                int tils_to_add = defaultSettings.max_line_size - 2 - message.size();
+                                std::cerr << tils_to_add << std::endl;
+
+                                for (int i = 0; i < tils_to_add / 2; i++) {
+                                    curLog += "~";
+                                }
+                                curLog += " ";
+
+                                tils_to_add -= tils_to_add/2;
+
+                                curLog += message;
+
+                                curLog += " ";
+                                for (int i = 0; i < tils_to_add; i++) {
+                                    curLog += "~";
+                                }
+
+                                writting = false;
+                            }
+                        }
+                        else {
+                            if (message.size() > defaultSettings.max_line_size) {
+                                curLog.insert(curLog.end(), message.begin(), message.begin() + defaultSettings.max_line_size);
+
+                                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size);
+                            }
+                            else {
+                                if (TT == Edit::TextType::HEADER) {
+                                    TextUtils::Alignment::center(message, defaultSettings.max_line_size);
+                                }
+                                else if (TT == Edit::TextType::NORMAL) {
+                                    TextUtils::Alignment::left(message, defaultSettings.max_line_size);
+                                }
+
+                                curLog += message;
+                                writting = false;
+                            }
+                        }
+
+                        curLog += termination;
+
+                        log_file.write(curLog.c_str(), curLog.size());
+                    }
+                }
+                else {
+                    std::string log = initiation;
+
+                    // Checks if the message has more size than allowed
+                    if (message.size() > defaultSettings.max_line_size) {
+                        int size_to_remove = message.size() - defaultSettings.max_line_size;
+
+                        message.erase(message.end() - 1 - 5 - size_to_remove, message.end());
+
+                        log += " " + message + " (...)";
+                    }
+                    else {
+                        TextUtils::Alignment::left(message, defaultSettings.max_line_size);
+                        log += " " + message;
+                    }
+
+                    log += termination;
+
+                    log_file.write(log.c_str(), log.size());
+                }
+
+                if (TT == Edit::TextType::HEADER) {
+                    std::string separator = initiation + " ";
+
+                    for (int i = 0; i < defaultSettings.max_line_size; i++) {
+                        separator.push_back('*');
+                    }
+
+                    separator += termination;
+
+                    log_file.write(separator.c_str(), separator.size());
+                }     
+            }
+        }
     };
 } // namespace Logging
 
-/* 
-class Logger
-{
-private:
-    struct DefaultSettings
-    {
-        std::string logs_directory;
-        std::string base_file_name;
-        int max_file_size;
-        int max_line_size;
-        Time time_representation;
-        LoggingPattern logging_pattern;
-        bool individual_files;
-    };
+Logging::Logger::Logger() {}
 
-    class LoggerIterator
-    {
-    private:
-        std::vector<std::string> ite_strings;
-        std::time_t last_time;
-        std::chrono::milliseconds initial_time;
-        std::vector<LoggerIterator> chained_iterators;
+Logging::Logger::~Logger() {
+    if (log_file.is_open()) { log_file.close(); }
+}
 
-    public:
-        LoggerIterator() {
-            // Registers the initial time
-            initial_time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
-        }
+void Logging::Logger::init() {
+    // Checks the logs directory
+    if (!checkLogsDirectory()) { std::cerr << "> Logger not initialized. Could not create the directory for the log files." << std::endl; return; }
 
-        void writeIterationLog(const std::string);
-        
-        std::vector<std::string> getLog() { return ite_strings; }
-    };
+    // Opens the log file
+    if (!openLogFile()) { std::cerr << "> Logger not initialized. Log file could not be opened." << std::endl; return; }
 
-public:
-    enum class Settings
-    {
-        LOG_DIR,
-        FILE_NAME,
-        FILE_SIZE,
-        LINE_SIZE,
-        TIME_REP,
-        LOG_PATT,
-        IND_FILES
-    };
+    // Logger correctly initialized
+    isWorking = true;
+}
 
-private:
-    std::ofstream log_file;
-    int current_log_file = 0;
+bool Logging::Logger::checkLogsDirectory() {
+    // Removes any previous logs, if any exist
+    boost::filesystem::remove_all(defaultSettings.logs_directory);
 
-    std::unordered_map<Severity, std::ofstream> log_files;
+    // Creates the logs directory
+    return boost::filesystem::create_directory(defaultSettings.logs_directory);
+}
 
-    std::unordered_map<Severity, int> current_log_files {
-        {Severity::TRACE, 0},
-        {Severity::DEBUG, 0},
-        {Severity::INFO, 0},
-        {Severity::WARNING, 0},
-        {Severity::ERROR, 0},
-        {Severity::FATAL, 0}
-    };
+bool Logging::Logger::openLogFile() {
+    // Closes the previous log file, if is opened
+    if (log_file.is_open()) { log_file.close(); }
 
-    std::unordered_map<Severity, std::string> severity_levels {
-        {Severity::TRACE, "[trace]"},
-        {Severity::DEBUG, "[debug]"},
-        {Severity::INFO, "[info]"},
-        {Severity::WARNING, "[warning]"},
-        {Severity::ERROR, "[error]"},
-        {Severity::FATAL, "[fatal]"}
-    };
+    // Opens the file
+    log_file = std::ofstream (
+        defaultSettings.logs_directory +
+        defaultSettings.file_name +
+        std::to_string(++counter_log_files) +
+        ".txt", std::ios::out
+    );
 
-    bool working = false;
+    return !log_file.fail();
+}
 
-    DefaultSettings settings {
-        "../logs/", // Logs directory
-        "log_file", // Logs base file name
-        500, // Max file size (in bytes)
-        66, // Max line size
-        Time::TIME, // Show only time
-        LoggingPattern::SEV_MSG, // Log as Severity + Message
-        false // One log for all severities
-    };
+void Logging::Logger::setSettings(Logging::Edit::Setting setting) {}
 
-private:
-    void checkLogsDirectory() {
-        // Stablishes the logs directory
-        boost::filesystem::path log_directory(settings.logs_directory);
+void Logging::Logger::setSettings(Logging::Edit::Settings settings) {
+    defaultSettings = settings;
+}
 
-        // Removes any logs if any exist
-        boost::filesystem::remove_all(log_directory);
-
-        // Creates the logs directory if it does not exist
-        boost::filesystem::create_directory(log_directory);
+void Logging::Logger::checkLogFileSize() {
+    // Checks if the current log file as already achieved the maximum size
+    if (log_file.tellp() >= defaultSettings.max_file_size) {
+        // Opens a new log file
+        if (!openLogFile()) { std::cerr << "> Logger stopped working. New log file could not be opened." << std::endl; isWorking = false; return; }
     }
+}
 
-    void openLogFile() {
-        // Closes the previous log file, if opened
-        if (log_file.is_open()) { log_file.close(); }
+std::string Logging::Logger::makeTimestamp() {
+    // If the user does not want a timestamp
+    if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::NONE) { return ""; }
 
-        // Increments the file counter
-        current_log_file++;
+    // Gets the time since epoch
+    std::time_t time_since_epoch = std::time(nullptr);
 
-        // Opens the file
-        log_file = std::ofstream(
-            settings.logs_directory +
-            settings.base_file_name +
-            std::to_string(current_log_file) +
-            ".txt", std::ios::out
-        );
-    }
+    // Gets the local time
+    std::tm *tm = std::localtime(&time_since_epoch);
 
-    void openLogFile(Severity severity) {
-        // Closes the previous log file, if opened
-        if (log_files[severity].is_open()) { log_files.at(severity).close(); }
+    // Creates the timestamp string, that will be output
+    std::string timestamp;
 
-        // Increments the file counter
-        current_log_files.at(severity)++;
+    // Opens the timestamp bracket
+    timestamp += "[";
 
-        // Opens the file
-        log_files.at(severity) = std::ofstream(
-            settings.logs_directory +
-            settings.base_file_name +
-            "_" +
-            severity_levels.at(severity) +
-            "_" +
-            std::to_string( current_log_files.at(severity) ) +
-            ".txt", std::ios::out
-        );
-    }
-
-    std::string getTime() {
-        // If the user does not want time, gives nothing
-        if (settings.time_representation == Time::NONE) { return ""; }
-
-        // Gets the time
-        std::time_t curTime = std::time(nullptr);
-
-        // Gets a better representation of the time
-        std::tm *tm = std::localtime(&curTime);
-
-        // Starts the current time with a bracket
-        std::string current_time = "[";
-
-        // Inserts time data based on the time representation settings...
-
-        if (settings.time_representation & Time::WEEK) {
-            current_time += weeks_map.at(tm->tm_wday);
-        }
-
-        if (settings.time_representation & Time::MONTH) {
-            // Adds a space between the last time data if any
-            if (current_time.size() > 1) { current_time += " "; }
-
-            current_time += months_map.at(tm->tm_mon);
-        }
-
-        if (settings.time_representation & Time::DAY) {
-            // Adds a space between the last time data if any
-            if (current_time.size() > 1) { current_time += " "; }
-
-            int curDay = tm->tm_mday;
-
-            current_time += (curDay < 10 ? "0" + std::to_string(curDay): std::to_string(curDay));
-        }
-
-        if (settings.time_representation & Time::YEAR) {
-            // Adds a space between the last time data if any
-            if (current_time.size() > 1) { current_time += " "; }
-
-            current_time += std::to_string(tm->tm_year + 1900);
-        }
-
-        if (settings.time_representation & Time::TIME) {
-            // Closes the calendar section and opens one for the time itself, if any data info already written
-            if (current_time.size() > 1) { current_time += "]["; }
-
-            int hour_t = tm->tm_hour, min_t = tm->tm_min, sec_t = tm->tm_sec;
-
-            current_time += (hour_t < 10 ? "0" + std::to_string(hour_t): std::to_string(hour_t));
-            current_time += ":";
-            current_time += (min_t < 10 ? "0" + std::to_string(min_t) : std::to_string(min_t));
-            current_time += ":";
-            current_time += (sec_t < 10 ? "0" + std::to_string(sec_t) : std::to_string(sec_t));
-        }
-
-        // Closes the bracket
-        current_time.push_back(']');
-
-        return current_time;
-    }
-
-    void checkFileSize() {
-        // Checks if there are files for individual severities or not
-        if (settings.individual_files) {
-            if (log_files.at(Severity::TRACE).tellp() >= settings.max_file_size)
-                openLogFile(Severity::TRACE);
-            if (log_files.at(Severity::DEBUG).tellp() >= settings.max_file_size)
-                openLogFile(Severity::DEBUG);
-            if (log_files.at(Severity::INFO).tellp() >= settings.max_file_size)
-                openLogFile(Severity::INFO);
-            if (log_files.at(Severity::WARNING).tellp() >= settings.max_file_size)
-                openLogFile(Severity::WARNING);
-            if (log_files.at(Severity::ERROR).tellp() >= settings.max_file_size)
-                openLogFile(Severity::ERROR);
-            if (log_files.at(Severity::FATAL).tellp() >= settings.max_file_size)
-                openLogFile(Severity::FATAL);
-        }
-        else {
-            // Checks if the current log file has already reached the maximum size
-            if (log_file.tellp() >= settings.max_file_size) {
-                // Opens a new log file
-                openLogFile();
-            }
-        }
-    }
-
-public:
-    Logger() {}
-    ~Logger() {
-        if(log_file.is_open()) { log_file.close(); }
-    }
-
-    void init(bool individualLogs = false) {
-        checkLogsDirectory();
-
-        if (settings.individual_files) {
-            openLogFile(Severity::TRACE);
-            openLogFile(Severity::DEBUG);
-            openLogFile(Severity::INFO);
-            openLogFile(Severity::WARNING);
-            openLogFile(Severity::ERROR);
-            openLogFile(Severity::FATAL);
-        }
-        else {
-            openLogFile();
-        }
-        
-        working = true;
-    }
-
-    // For strings
-    void setSettings(Settings setting, std::string value) {
-        switch (setting)
-        {
-            case Settings::LOG_DIR: settings.logs_directory = value; break;
-            case Settings::FILE_NAME: settings.base_file_name = value; break;
-        }
-    }
-
-    // For ints / bools / enums
-    void setSettings(Settings setting, int value) {
-        switch (setting)
-        {
-            case Settings::FILE_SIZE: settings.max_file_size = value; break;
-            case Settings::LINE_SIZE: settings.max_line_size = value; break;
-            case Settings::TIME_REP: settings.time_representation = (Time)value; break;
-            case Settings::LOG_PATT: settings.logging_pattern = (LoggingPattern)value; break;
-            case Settings::IND_FILES: settings.individual_files = (bool)value; break;
-            default: writeLog(Severity::WARNING, "Setting not recognized."); break;
-        }
-    }
-
-    void setSettings(DefaultSettings settings) {
-        this->settings = settings;
-    }
-
-    void writeLog(Severity severity, const std::string &message) {
-        if (working) {
-            std::string log;
-            std::string timeStr;
-
-            if (settings.logging_pattern == LoggingPattern::TIME_SEV_MSG) {
-                log += getTime();
-            }
-
-            log += severity_levels.at(severity);
-
-            if (settings.logging_pattern == LoggingPattern::SEV_TIME_MSG) {
-                log += getTime();
-            }
-
-            if (settings.logging_pattern == LoggingPattern::SEV_MSG_TIME) {
-                timeStr = " " + getTime();
-            }
-
-            std::string wholeMsg = message;
-
-            bool alive = true;
-            while (alive) {
-                std::string curLog;
-                curLog += log + " ";
-
-                if (wholeMsg.size() > settings.max_line_size) {
-                    curLog.insert(curLog.end(), wholeMsg.begin(), wholeMsg.begin() + settings.max_line_size);
-
-                    wholeMsg.erase(wholeMsg.begin(), wholeMsg.begin() + settings.max_line_size);            
-                }
-                else {
-                    curLog += wholeMsg;
-                    alive = false;
-                }
-
-                curLog += timeStr;
-                curLog += '\n';
-
-                if (settings.individual_files) {
-                    log_files.at(severity).write(curLog.c_str(), curLog.size());
-                }
-                else {
-                    log_file.write (curLog.c_str(), curLog.size());
-                }      
-
-                checkFileSize();               
-            }     
-        }
-    }
-
-    enum class TextTemplate
-    {
-        HEADER
-    };
-
-    template<typename T>
-    void log_trace() {
-
-    }
+    //Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME
     
-    void log_debug() {}
-    void log_info() {}
-    void log_warning() {}
-    void log_error() {}
-    void log_fatal() {}
+    bool calendar = false, year = false;
 
-    void writeLog(std::string header) {
-        if (working) {
-            std::string log_init, log_end;
-            for (int i = 0; i < settings.max_line_size; i++) { log_init.push_back('*'); }
-            log_end = log_init;
+    if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME) {
+        // Adds the Week day to the timestamp
+        timestamp += Logging::Utils::Dictionary::week_days.at(tm->tm_wday);
 
-            writeLog(Severity::INFO, log_init);
-            TextUtils::Alignment::center(header, settings.max_line_size);
-            writeLog(Severity::INFO, header);
-            writeLog(Severity::INFO, log_end);
-        }
+        // Adds a space
+        timestamp += " ";
+
+        // Adds the Month to the timestamp
+        timestamp += Logging::Utils::Dictionary::months.at(tm->tm_mon);
+
+        // Adds a space
+        timestamp += " ";
+
+        // Adds the Day to the timestamp
+        timestamp += (tm->tm_mday < 10 ? "0" + std::to_string(tm->tm_mday) : std::to_string(tm->tm_mday));
+
+        // Adds a space
+        timestamp += " ";
+
+        // Adds the year
+        timestamp += std::to_string(tm->tm_year + 1900);
+    }
+    else if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::CALENDAR_TIME) {
+        // Adds the Week day to the timestamp
+        timestamp += Logging::Utils::Dictionary::week_days.at(tm->tm_wday);
+
+        // Adds a space
+        timestamp += " ";
+
+        // Adds the Month to the timestamp
+        timestamp += Logging::Utils::Dictionary::months.at(tm->tm_mon);
+
+        // Adds a space
+        timestamp += " ";
+
+        // Adds the Day to the timestamp
+        timestamp += (tm->tm_mday < 10 ? "0" + std::to_string(tm->tm_mday) : std::to_string(tm->tm_mday));
     }
 
-    //std::unordered_map<>;
+    // Closes and opens a bracket, if the user wanted the calendar
+    timestamp += "][";
 
-    void beginIterationLog(const std::string &message) {
+    // Adds the hour
+    if (tm->tm_hour < 10) { timestamp += "0"; }
+    timestamp += std::to_string(tm->tm_hour);
 
-    }
+    // Adds a delimiter
+    timestamp += ":";
 
-    void endIterationLog() {
+    // Adds the minutes
+    if (tm->tm_min < 10) { timestamp += "0"; }
+    timestamp += std::to_string(tm->tm_min); 
 
-    }
-}; */
+    // Adds a delimiter
+    timestamp += ":";
+
+    // Adds the seconds
+    if (tm->tm_sec < 10) { timestamp += "0"; }
+    timestamp += std::to_string(tm->tm_sec);
+
+    // Closes the timestamp bracket
+    timestamp += "]";
+
+    return timestamp;
+}

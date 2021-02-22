@@ -26,8 +26,10 @@ int main(int argc, char* argv[])
 
     logger.init();
 
-    logger.log_info("This is just a INFO test message.");
-    logger.log_info("This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed!");
+    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is just a INFO test message.");
+    logger.write_log<Logging::Edit::TextType::SUB_HEADER>(Logging::Severity::INFO, "This is dasgduasgdhsayhjust a INFO test message");
+    logger.write_log(Logging::Severity::INFO, "This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed!");
+    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "Another Header.");
 
     /* logger.writeLog(Severity::TRACE, "Testing TRACE log.");
     logger.writeLog(Severity::DEBUG, "Testing DEBUG log.");

@@ -30,46 +30,6 @@ namespace Logging
         FATAL   = 32
     };
 
-    namespace Utils
-    {
-        namespace Dictionary
-        {
-            static std::unordered_map<int, std::string> months {
-                {0, "Jan"},
-                {1, "Feb"},
-                {2, "Mar"},
-                {3, "Apr"},
-                {4, "May"},
-                {5, "Jun"},
-                {6, "Jul"},
-                {7, "Ago"},
-                {8, "Sep"},
-                {9, "Oct"},
-                {10, "Nov"},
-                {11, "Dec"}
-            };
-
-            static std::unordered_map<int, std::string> week_days {
-                {0, "Sun"},
-                {1, "Mon"},
-                {2, "Tue"},
-                {3, "Wed"},
-                {4, "Thu"},
-                {5, "Fri"},
-                {6, "Sat"}
-            };
-
-            static std::unordered_map<Severity, std::string> severity_levels {
-                {Severity::TRACE,   "[ trace ]"},
-                {Severity::DEBUG,   "[ debug ]"},
-                {Severity::INFO,    "[ info  ]"},
-                {Severity::WARNING, "[warning]"},
-                {Severity::ERROR,   "[ error ]"},
-                {Severity::FATAL,   "[ fatal ]"}
-            };
-        } // namespace Dictionary        
-    } // namespace Utils
-
     namespace Edit
     {
         enum class Setting
@@ -78,6 +38,7 @@ namespace Logging
             FILE_NAME,
             FILE_SIZE,
             LINE_SIZE,
+            ALLOW_MULTIPLE_LINES,
             TIME_TEMPLATE,
             LOG_TEMPLATE
         };
@@ -116,7 +77,60 @@ namespace Logging
             LogTemplate log_template;
         };
     } // namespace Edit
-    
+
+    namespace Utils
+    {
+        namespace Dictionary
+        {
+            static std::unordered_map<int, std::string> months {
+                {0, "Jan"},
+                {1, "Feb"},
+                {2, "Mar"},
+                {3, "Apr"},
+                {4, "May"},
+                {5, "Jun"},
+                {6, "Jul"},
+                {7, "Ago"},
+                {8, "Sep"},
+                {9, "Oct"},
+                {10, "Nov"},
+                {11, "Dec"}
+            };
+
+            static std::unordered_map<int, std::string> week_days {
+                {0, "Sun"},
+                {1, "Mon"},
+                {2, "Tue"},
+                {3, "Wed"},
+                {4, "Thu"},
+                {5, "Fri"},
+                {6, "Sat"}
+            };
+
+            static std::unordered_map<Severity, std::string> severity_levels {
+                {Severity::TRACE,   "[ trace ]"},
+                {Severity::DEBUG,   "[ debug ]"},
+                {Severity::INFO,    "[ info  ]"},
+                {Severity::WARNING, "[warning]"},
+                {Severity::ERROR,   "[ error ]"},
+                {Severity::FATAL,   "[ fatal ]"}
+            };
+
+            static std::unordered_map<Edit::LogTemplate, std::string> log_templates {
+                {Edit::LogTemplate::SEV_MSG, "[Severity] Message"},
+                {Edit::LogTemplate::TIME_SEV_MSG, "[Time][Severity] Message"},
+                {Edit::LogTemplate::SEV_TIME_MSG, "[Severity][Time] Message"},
+                {Edit::LogTemplate::SEV_MSG_TIME, "[Severity] Message [Time]"}
+            };
+
+            static std::unordered_map<Edit::TimestampTemplate, std::string> timestamp_templates {
+                {Edit::TimestampTemplate::NONE, "No timestamp"},
+                {Edit::TimestampTemplate::TIME, "[hh::mm::ss]"},
+                {Edit::TimestampTemplate::CALENDAR_TIME, "[week month day hh::mm::ss]"},
+                {Edit::TimestampTemplate::CALENDAR_YEAR_TIME, "[week month day year hh::mm::ss]"}
+            };
+        } // namespace Dictionary        
+    } // namespace Utils    
     
     class Logger
     {
@@ -130,7 +144,7 @@ namespace Logging
         Edit::Settings defaultSettings = {
             "logs/", // Logs directory
             "log_file", // Logs base file name
-            500, // Max file size (in bytes)
+            5000000, // Max file size (in bytes)
             66, // Max line size - 66 characters
             true, // Allow logs for multiple lines
             Edit::TimestampTemplate::TIME, // Show only time
@@ -156,7 +170,18 @@ namespace Logging
 
         void init();
 
-        void setSettings(Edit::Setting setting);
+        // Overload setSetting for strings
+        void setSetting(Edit::Setting setting, const std::string &value);
+
+        // Overload setSetting for int / bool
+        void setSetting(Edit::Setting setting, int value);
+
+        // Overload to timestamp template
+        void setSetting(Edit::Setting setting, Edit::TimestampTemplate value);
+
+        // Overload to log template
+        void setSetting(Edit::Setting setting, Edit::LogTemplate value);
+
         void setSettings(Edit::Settings settings);
 
         template <Edit::TextType TT = Edit::TextType::NORMAL>
@@ -197,6 +222,9 @@ namespace Logging
                 if (TT == Edit::TextType::HEADER) { write_header_log(initiation, message, termination); }
                 else if (TT == Edit::TextType::SUB_HEADER) { write_sub_header_log(initiation, message, termination); }
                 else if (TT == Edit::TextType::NORMAL) { write_normal_log(initiation, message, termination); }
+
+                // After logging, check file size
+                checkLogFileSize();
             }
         }
     };
@@ -242,9 +270,108 @@ bool Logging::Logger::openLogFile() {
     return !log_file.fail();
 }
 
-void Logging::Logger::setSettings(Logging::Edit::Setting setting) {}
+void Logging::Logger::setSetting(Edit::Setting setting, const std::string &value) {
+    switch (setting)
+    {
+    case Edit::Setting::LOGS_DIRECTORY:
+        // Change the Log Directory setting
+        defaultSettings.logs_directory = value;
 
-void Logging::Logger::setSettings(Logging::Edit::Settings settings) {
+        // Changes the log folder
+        checkLogsDirectory();
+
+        // Restarts the log counter
+        counter_log_files = 0;
+
+        // Creates the log file
+        openLogFile();
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Logs directory was successfully changed to " + value + ".");
+
+        break;
+    
+    case Edit::Setting::FILE_NAME:
+        // Change the Log Directory setting
+        defaultSettings.file_name = value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Logs file name successfully changed to " + value + ".");
+
+        break;
+    
+    default:
+        std::cerr << "> The input logger setting was not recognized. Default / previous setting will remain active." << std::endl;
+
+        write_log(Severity::WARNING, "Input logger setting not recognized. Default / previous setting will remain active.");
+        
+        break;
+    }
+}
+
+void Logging::Logger::setSetting(Edit::Setting setting, int value){
+    switch (setting)
+    {
+    case Edit::Setting::FILE_SIZE:
+        // Change the Log Directory setting
+        defaultSettings.max_file_size = value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Maximum log file size was successfully changed to " + std::to_string(value) + " bytes.");
+
+        break;
+    
+    case Edit::Setting::LINE_SIZE:
+        // Change the Log Directory setting
+        defaultSettings.max_line_size = value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Maximum line size was successfully changed to " + std::to_string(value) + " characters.");
+
+        break;
+
+    case Edit::Setting::ALLOW_MULTIPLE_LINES:
+        // Change the Log Directory setting
+        defaultSettings.allow_multiple_line_logs = (bool)value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO,
+        "Multiple lines log setting was set to " + std::to_string(value) + ".");
+
+        break;
+
+    case Edit::Setting::LOG_TEMPLATE:
+        // Change the Log Directory setting
+        defaultSettings.log_template = (Edit::LogTemplate)value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Logs template name successfully changed to: " + Utils::Dictionary::log_templates.at((Edit::LogTemplate)value));
+
+        break;
+    
+    case Edit::Setting::TIME_TEMPLATE:
+        // Change the Log Directory setting
+        defaultSettings.timestamp_template = (Edit::TimestampTemplate)value;
+
+        // Logs into the file (if it was already initialized)
+        write_log(Severity::INFO, "Timestamp template was successfully changed to: " + Utils::Dictionary::timestamp_templates.at((Edit::TimestampTemplate)value));
+
+        break;
+    
+    default:
+        std::cerr << "> The input logger setting was not recognized. Default / previous setting will remain active." << std::endl;
+
+        write_log(Severity::WARNING, "Input logger setting not recognized. Default / previous setting will remain active.");
+        
+        break;
+    }
+}
+
+void Logging::Logger::setSetting(Edit::Setting setting, Edit::TimestampTemplate value) { setSetting(setting, (int)value); }
+
+void Logging::Logger::setSetting(Edit::Setting setting, Edit::LogTemplate value) { setSetting(setting, (int)value); }
+
+void Logging::Logger::setSettings(Edit::Settings settings) {
     defaultSettings = settings;
 }
 
@@ -272,19 +399,17 @@ std::string Logging::Logger::makeTimestamp() {
     // Opens the timestamp bracket
     timestamp += "[";
 
-    //Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME
-    
     bool calendar = false, year = false;
 
-    if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME) {
+    if (defaultSettings.timestamp_template == Edit::TimestampTemplate::CALENDAR_YEAR_TIME) {
         // Adds the Week day to the timestamp
-        timestamp += Logging::Utils::Dictionary::week_days.at(tm->tm_wday);
+        timestamp += Utils::Dictionary::week_days.at(tm->tm_wday);
 
         // Adds a space
         timestamp += " ";
 
         // Adds the Month to the timestamp
-        timestamp += Logging::Utils::Dictionary::months.at(tm->tm_mon);
+        timestamp += Utils::Dictionary::months.at(tm->tm_mon);
 
         // Adds a space
         timestamp += " ";
@@ -298,15 +423,15 @@ std::string Logging::Logger::makeTimestamp() {
         // Adds the year
         timestamp += std::to_string(tm->tm_year + 1900);
     }
-    else if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::CALENDAR_TIME) {
+    else if (defaultSettings.timestamp_template == Edit::TimestampTemplate::CALENDAR_TIME) {
         // Adds the Week day to the timestamp
-        timestamp += Logging::Utils::Dictionary::week_days.at(tm->tm_wday);
+        timestamp += Utils::Dictionary::week_days.at(tm->tm_wday);
 
         // Adds a space
         timestamp += " ";
 
         // Adds the Month to the timestamp
-        timestamp += Logging::Utils::Dictionary::months.at(tm->tm_mon);
+        timestamp += Utils::Dictionary::months.at(tm->tm_mon);
 
         // Adds a space
         timestamp += " ";
@@ -316,7 +441,7 @@ std::string Logging::Logger::makeTimestamp() {
     }
 
     // Closes and opens a bracket, if the user wanted the calendar
-    timestamp += "][";
+    if (defaultSettings.timestamp_template != Edit::TimestampTemplate::TIME) { timestamp += "]["; }
 
     // Adds the hour
     if (tm->tm_hour < 10) { timestamp += "0"; }

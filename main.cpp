@@ -15,9 +15,9 @@ int main(int argc, char* argv[])
     Logging::Edit::Settings settings {
         "logs/",
         "my_log_file",
-        50,
+        1000,
         45,
-        false,
+        true,
         Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
         Logging::Edit::LogTemplate::SEV_MSG_TIME
     };
@@ -40,6 +40,18 @@ int main(int argc, char* argv[])
     logger.write_log(Logging::Severity::WARNING, "This is a small warning test.");
     logger.write_log(Logging::Severity::ERROR, "This is a small error test.");
     logger.write_log(Logging::Severity::FATAL, "This is a small fatal test.");
+
+    logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, false);
+    logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, true);
+    logger.setSetting(Logging::Edit::Setting::FILE_NAME, "YEEYEYE");
+    logger.setSetting(Logging::Edit::Setting::FILE_SIZE, 5000);
+    logger.setSetting(Logging::Edit::Setting::LINE_SIZE, 40);
+    logger.setSetting(Logging::Edit::Setting::LOG_TEMPLATE, Logging::Edit::LogTemplate::TIME_SEV_MSG);
+    logger.setSetting(Logging::Edit::Setting::LOGS_DIRECTORY, "TESFASASFAS/");
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::TIME);
+    logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, false);
+    logger.setSetting(Logging::Edit::Setting::ALLOW_MULTIPLE_LINES, true);
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::NONE);
 
     return 0;
 }

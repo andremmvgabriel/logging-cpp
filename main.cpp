@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         "my_log_file",
         50,
         45,
-        true,
+        false,
         Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
         Logging::Edit::LogTemplate::SEV_MSG_TIME
     };
@@ -26,47 +26,20 @@ int main(int argc, char* argv[])
 
     logger.init();
 
-    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is just a INFO test message.");
-    logger.write_log<Logging::Edit::TextType::SUB_HEADER>(Logging::Severity::INFO, "This is dasgduasgdhsayhjust a INFO test message");
+    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a small HEADER test.");
+    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a huuuuuuuuuuuge HEADER test, to check if the double line is correct.");
+
+    logger.write_log<Logging::Edit::TextType::SUB_HEADER>(Logging::Severity::INFO, "This is a small SUB-HEADER test.");
+    logger.write_log<Logging::Edit::TextType::SUB_HEADER>(Logging::Severity::INFO, "This is a huuuuuuuuuuuuuuge SUB-HEADER test, to check if the double line is correct.");
+
+    logger.write_log(Logging::Severity::INFO, "This is a small info test.");
     logger.write_log(Logging::Severity::INFO, "This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed! This is another test to make sure logs with 2 or more lines are correctly displayed!");
-    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "Another Header.");
 
-    /* logger.writeLog(Severity::TRACE, "Testing TRACE log.");
-    logger.writeLog(Severity::DEBUG, "Testing DEBUG log.");
-    logger.writeLog(Severity::INFO, "Testing INFO log.");
-    logger.writeLog(Severity::WARNING, "Testing WARNING log.");
-    logger.writeLog(Severity::ERROR, "Testing ERROR log.");
-    logger.writeLog(Severity::FATAL, "Testing FATAL log.");
-
-    std::string test;
-    for (int i = 0; i < 84; i++) {
-        test += std::to_string( i % 2 );
-    }
-
-    logger.writeLog(Severity::INFO, test);
-
-    logger.writeLog("This is just a header");
-    logger.writeLog(Severity::INFO, "Message after the header."); */
-
-    /* someDummyProcess(logger);
-
-    logger.writeLog(Severity::TRACE, __function__);
-
-    logger.writeLog(Severity::DEBUG, "She had been an angel for coming up on 10 years and in all that time nobody had told her this was possible. The fact that it could ever happen never even entered her mind. Yet there she stood, with the undeniable evidence sitting on the ground before her. Angels could lose their wings.");
-
-    std::string somethingRandom = "She had been an angel for coming up on 10 years and in all that time nobody had told her this was possible. The fact that it could ever happen never even entered her mind. Yet there she stood, with the undeniable evidence sitting on the ground before her. Angels could lose their wings.";
- */
-
-    /* logger.beginIterationLog("Dividing the phrase.");
-    int prevPos = 0;
-    for (int i = 0; i < 20; i++) {
-        std::string curIte(somethingRandom.begin() + prevPos, somethingRandom.begin() + prevPos + i);
-
-        logger.writeLog(curIte);
-
-        prevPos += i;
-    }
-    logger.endIterationLog(); */
+    logger.write_log(Logging::Severity::TRACE, "This is a small trace test.");
+    logger.write_log(Logging::Severity::DEBUG, "This is a small debug test.");
+    logger.write_log(Logging::Severity::WARNING, "This is a small warning test.");
+    logger.write_log(Logging::Severity::ERROR, "This is a small error test.");
+    logger.write_log(Logging::Severity::FATAL, "This is a small fatal test.");
 
     return 0;
 }

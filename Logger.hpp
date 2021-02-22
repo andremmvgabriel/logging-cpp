@@ -60,12 +60,12 @@ namespace Logging
             };
 
             static std::unordered_map<Severity, std::string> severity_levels {
-                {Severity::TRACE, "[trace]"},
-                {Severity::DEBUG, "[debug]"},
-                {Severity::INFO, "[info]"},
+                {Severity::TRACE,   "[ trace ]"},
+                {Severity::DEBUG,   "[ debug ]"},
+                {Severity::INFO,    "[ info  ]"},
                 {Severity::WARNING, "[warning]"},
-                {Severity::ERROR, "[error]"},
-                {Severity::FATAL, "[fatal]"}
+                {Severity::ERROR,   "[ error ]"},
+                {Severity::FATAL,   "[ fatal ]"}
             };
         } // namespace Dictionary        
     } // namespace Utils
@@ -144,6 +144,12 @@ namespace Logging
 
         std::string makeTimestamp();
 
+        void write_header_log(const std::string &initiation, std::string message, const std::string &termination);
+
+        void write_sub_header_log(const std::string &initiation, std::string message, const std::string &termination);
+
+        void write_normal_log(const std::string &initiation, std::string message, const std::string &termination);
+
     public:
         Logger();
         ~Logger();
@@ -154,11 +160,11 @@ namespace Logging
         void setSettings(Edit::Settings settings);
 
         template <Edit::TextType TT = Edit::TextType::NORMAL>
-        void write_log(Severity severity, std::string message)
+        void write_log(Severity severity, const std::string &message)
         {
             if (isWorking) {
                 // Creates the three log parts
-                std::string initiation, middle, termination;
+                std::string initiation, termination;
 
                 // Checks if the log template has the time in the beginning
                 if (defaultSettings.log_template == Logging::Edit::LogTemplate::TIME_SEV_MSG) {
@@ -175,126 +181,22 @@ namespace Logging
                     initiation += makeTimestamp();
                 }
 
+                // Adds a space to the initiation
+                initiation += " ";
+
                 // Checks if the log has the time after the message
                 if (defaultSettings.log_template == Logging::Edit::LogTemplate::SEV_MSG_TIME) {
                     // Adds the timestamp
                     termination += " " + makeTimestamp();
                 }
 
-                // Adds the end line
+                // Adds the end line to the termination
                 termination += "\n";
 
-                if (TT == Edit::TextType::HEADER) {
-                    std::string empty_message = initiation + " ", separator = initiation + " ";
-
-                    for (int i = 0; i < defaultSettings.max_line_size; i++) {
-                        empty_message.push_back(' ');
-                        separator.push_back('*');
-                    }
-
-                    empty_message += termination;
-                    separator += termination;
-
-                    log_file.write(empty_message.c_str(), empty_message.size());
-                    log_file.write(separator.c_str(), separator.size());
-                }
-
-                // Makes sure the user allows multiple lines for a single log
-                if (defaultSettings.allow_multiple_line_logs) {
-                    // Writes the logs
-                    int writting = true;
-                    while (writting) {
-                        std::string curLog = initiation;
-
-                        // Adds a separation
-                        curLog += " ";
-
-                        if (TT == Edit::TextType::SUB_HEADER) {
-                            if (message.size() > defaultSettings.max_line_size - 8) {
-                                curLog += "~~~ ";
-                                curLog.insert(curLog.end(), message.begin(), message.begin() + defaultSettings.max_line_size - 8);
-
-                                curLog += " ~~~";
-
-                                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size - 8);
-                            }
-                            else {
-                                int tils_to_add = defaultSettings.max_line_size - 2 - message.size();
-                                std::cerr << tils_to_add << std::endl;
-
-                                for (int i = 0; i < tils_to_add / 2; i++) {
-                                    curLog += "~";
-                                }
-                                curLog += " ";
-
-                                tils_to_add -= tils_to_add/2;
-
-                                curLog += message;
-
-                                curLog += " ";
-                                for (int i = 0; i < tils_to_add; i++) {
-                                    curLog += "~";
-                                }
-
-                                writting = false;
-                            }
-                        }
-                        else {
-                            if (message.size() > defaultSettings.max_line_size) {
-                                curLog.insert(curLog.end(), message.begin(), message.begin() + defaultSettings.max_line_size);
-
-                                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size);
-                            }
-                            else {
-                                if (TT == Edit::TextType::HEADER) {
-                                    TextUtils::Alignment::center(message, defaultSettings.max_line_size);
-                                }
-                                else if (TT == Edit::TextType::NORMAL) {
-                                    TextUtils::Alignment::left(message, defaultSettings.max_line_size);
-                                }
-
-                                curLog += message;
-                                writting = false;
-                            }
-                        }
-
-                        curLog += termination;
-
-                        log_file.write(curLog.c_str(), curLog.size());
-                    }
-                }
-                else {
-                    std::string log = initiation;
-
-                    // Checks if the message has more size than allowed
-                    if (message.size() > defaultSettings.max_line_size) {
-                        int size_to_remove = message.size() - defaultSettings.max_line_size;
-
-                        message.erase(message.end() - 1 - 5 - size_to_remove, message.end());
-
-                        log += " " + message + " (...)";
-                    }
-                    else {
-                        TextUtils::Alignment::left(message, defaultSettings.max_line_size);
-                        log += " " + message;
-                    }
-
-                    log += termination;
-
-                    log_file.write(log.c_str(), log.size());
-                }
-
-                if (TT == Edit::TextType::HEADER) {
-                    std::string separator = initiation + " ";
-
-                    for (int i = 0; i < defaultSettings.max_line_size; i++) {
-                        separator.push_back('*');
-                    }
-
-                    separator += termination;
-
-                    log_file.write(separator.c_str(), separator.size());
-                }     
+                // Writes based on the Text Type that the user wants
+                if (TT == Edit::TextType::HEADER) { write_header_log(initiation, message, termination); }
+                else if (TT == Edit::TextType::SUB_HEADER) { write_sub_header_log(initiation, message, termination); }
+                else if (TT == Edit::TextType::NORMAL) { write_normal_log(initiation, message, termination); }
             }
         }
     };
@@ -438,4 +340,193 @@ std::string Logging::Logger::makeTimestamp() {
     timestamp += "]";
 
     return timestamp;
+}
+
+void Logging::Logger::write_header_log(const std::string &initiation, std::string message, const std::string &termination) {
+    // Creates the extra strings needed for the header
+    std::string empty_message = initiation;
+    std::string separator_message = initiation;
+
+    // Fills the extra strings with content
+    for (int i = 0; i < defaultSettings.max_line_size; i++) {
+        empty_message.push_back(' ');
+        separator_message.push_back('*');
+    }
+
+    // Concludes the extra string with the termination
+    empty_message += termination;
+    separator_message += termination;
+
+    // Logs the empty message followed by the separator
+    log_file.write(empty_message.c_str(), empty_message.size());
+    log_file.write(separator_message.c_str(), separator_message.size());
+
+    // Writes the log message(s)
+    bool writting = true;
+    while (writting) {
+        // Creates the current log
+        std::string cur_log = initiation;
+
+        // Adds the initiation delimiter
+        cur_log += "* ";
+
+        // Calculates the size that has to be removed
+        int size_to_remove = message.size() + 4 - defaultSettings.max_line_size;
+
+        // Checks if there is anything to be removed
+        if (size_to_remove > 0) {
+            if (!defaultSettings.allow_multiple_line_logs) {
+                // Removes the unwanted part of the message
+                message.erase( message.end() - 6 - size_to_remove, message.end() );
+
+                // Adds the message to the log
+                cur_log += message + " (...)";
+
+                // Changes the writting variable state
+                writting = false;
+            }
+            else {
+                // Gets the current part of the message
+                std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size - 4);
+
+                // Removes the unwanted part of the message
+                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size - 4);
+
+                // Adds the message to the log
+                cur_log += cur_part;
+            }
+        }
+        else {
+            // Centers the text
+            TextUtils::Alignment::center(message, defaultSettings.max_line_size - 4);
+
+            // Adds the message to the log
+            cur_log += message;
+
+            // Changes the writting variable state
+            writting = false;
+        }
+
+        // Adds the termination delimiter
+        cur_log += " *";
+
+        // Adds the termination to the log
+        cur_log += termination;
+
+        // Writes the log
+        log_file.write(cur_log.c_str(), cur_log.size());
+    }
+
+    // Logs the separator to conclude the header
+    log_file.write(separator_message.c_str(), separator_message.size());
+}
+
+void Logging::Logger::write_sub_header_log(const std::string &initiation, std::string message, const std::string &termination) {
+    // Writes the log message(s)
+    bool writting = true;
+    while (writting) {
+        // Creates the current log
+        std::string cur_log = initiation;
+
+        // Adds the initiation delimiter
+        cur_log += "~~~ ";
+
+        // Calculates the size that has to be removed
+        int size_to_remove = message.size() + 8 - defaultSettings.max_line_size;
+
+        // Checks if there is anything to be removed
+        if (size_to_remove > 0) {
+            if (!defaultSettings.allow_multiple_line_logs) {
+                // Removes the unwanted part of the message
+                message.erase( message.end() - 6 - size_to_remove, message.end() );
+
+                // Adds the message to the log
+                cur_log += message + " (...)";
+
+                // Changes the writting variable state
+                writting = false;
+            }
+            else {
+                // Gets the current part of the message
+                std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size - 8);
+
+                // Removes the unwanted part of the message
+                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size - 8);
+
+                // Adds the message to the log
+                cur_log += cur_part;
+            }
+        }
+        else {
+            // Centers the text
+            TextUtils::Alignment::center(message, defaultSettings.max_line_size - 8);
+
+            // Adds the message to the log
+            cur_log += message;
+
+            // Changes the writting variable state
+            writting = false;
+        }
+
+        // Adds the termination delimiter
+        cur_log += " ~~~";
+
+        // Adds the termination to the log
+        cur_log += termination;
+
+        // Writes the log
+        log_file.write(cur_log.c_str(), cur_log.size());
+    }
+}
+
+void Logging::Logger::write_normal_log(const std::string &initiation, std::string message, const std::string &termination) {
+    // Writes the log message(s)
+    bool writting = true;
+    while (writting) {
+        // Creates the current log
+        std::string cur_log = initiation;
+
+        // Calculates the size that has to be removed
+        int size_to_remove = message.size() - defaultSettings.max_line_size;
+
+        // Checks if there is anything to be removed
+        if (size_to_remove > 0) {
+            if (!defaultSettings.allow_multiple_line_logs) {
+                // Removes the unwanted part of the message
+                message.erase( message.end() - 6 - size_to_remove, message.end() );
+
+                // Adds the message to the log
+                cur_log += message + " (...)";
+
+                // Changes the writting variable state
+                writting = false;
+            }
+            else {
+                // Gets the current part of the message
+                std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size);
+
+                // Removes the unwanted part of the message
+                message.erase(message.begin(), message.begin() + defaultSettings.max_line_size);
+
+                // Adds the message to the log
+                cur_log += cur_part;
+            }
+        }
+        else {
+            // Centers the text
+            TextUtils::Alignment::left(message, defaultSettings.max_line_size);
+
+            // Adds the message to the log
+            cur_log += message;
+
+            // Changes the writting variable state
+            writting = false;
+        }
+
+        // Adds the termination to the log
+        cur_log += termination;
+
+        // Writes the log
+        log_file.write(cur_log.c_str(), cur_log.size());
+    }
 }

@@ -2,38 +2,69 @@
 
 #include "Logger.hpp"
 
-/* void someDummyProcess(Logging::Logger &logger) {
+void someDummyProcess(Logging::Logger &logger) {
     int wait = rand() % 5;
     sleep(wait);
-    logger.writeLog(Severity::INFO, "Just a message " + std::to_string(wait) + " seconds later.");
-} */
+    logger.write_log(Logging::Severity::INFO, "Just a message " + std::to_string(wait) + " seconds later.");
+}
 
 int main(int argc, char* argv[])
 {
     Logging::Logger logger;
-
-    Logging::Edit::Settings settings {
+    
+    logger.setSettings({
         "logs/",
         "my_log_file",
-        50,
-        45,
+        100000000,
+        100,
         false,
-        //Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
         Logging::Edit::TimestampTemplate::NONE,
-        //Logging::Edit::LogTemplate::SEV_MSG_TIME
         Logging::Edit::LogTemplate::SEV_MSG
-    };
-    
-    logger.setSettings(settings);
+    });
 
     logger.init();
 
-    logger.write_log(Logging::Severity::TRACE, "This is a TRACE log.");
+    logger.write_log( Logging::Severity::INFO, "My first log example." );
+
+    /* logger.write_log(Logging::Severity::TRACE, "This is a TRACE log.");
     logger.write_log(Logging::Severity::INFO, "This is a INFO log.");
     logger.write_log(Logging::Severity::DEBUG, "This is a DEBUG log.");
     logger.write_log(Logging::Severity::WARNING, "This is a WARNING log.");
     logger.write_log(Logging::Severity::ERROR, "This is a ERROR log.");
     logger.write_log(Logging::Severity::FATAL, "This is a FATAL log.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::TIME);
+    logger.write_log(Logging::Severity::INFO, "Time is now being printed.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::CALENDAR_TIME);
+    logger.write_log(Logging::Severity::INFO, "Calendar + Time is now being printed.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME);
+    logger.write_log(Logging::Severity::INFO, "Calendar + Year + Time is now being printed.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::TIME_TEMPLATE, Logging::Edit::TimestampTemplate::TIME);
+    logger.setSetting(Logging::Edit::Setting::LOG_TEMPLATE, Logging::Edit::LogTemplate::SEV_MSG);
+    logger.write_log(Logging::Severity::INFO, "Log without timestamp.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::LOG_TEMPLATE, Logging::Edit::LogTemplate::TIME_SEV_MSG);
+    logger.write_log(Logging::Severity::INFO, "Timestamp on the left of the severity level.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::LOG_TEMPLATE, Logging::Edit::LogTemplate::SEV_TIME_MSG);
+    logger.write_log(Logging::Severity::INFO, "Timestamp on the right of the severity level.");
+
+    logger.write_log(Logging::Severity::INFO, "");
+    logger.setSetting(Logging::Edit::Setting::LOG_TEMPLATE, Logging::Edit::LogTemplate::SEV_MSG_TIME);
+    logger.write_log(Logging::Severity::INFO, "Timestamp on the end of the log.");
+
+    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a small header"); */
+
+    
 
     /* logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a small HEADER test.");
     logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a huuuuuuuuuuuge HEADER test, to check if the double line is correct.");

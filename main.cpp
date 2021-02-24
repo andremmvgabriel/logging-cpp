@@ -18,15 +18,24 @@ int main(int argc, char* argv[])
         50,
         45,
         false,
-        Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
-        Logging::Edit::LogTemplate::SEV_MSG_TIME
+        //Logging::Edit::TimestampTemplate::CALENDAR_YEAR_TIME,
+        Logging::Edit::TimestampTemplate::NONE,
+        //Logging::Edit::LogTemplate::SEV_MSG_TIME
+        Logging::Edit::LogTemplate::SEV_MSG
     };
     
     logger.setSettings(settings);
 
     logger.init();
 
-    logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a small HEADER test.");
+    logger.write_log(Logging::Severity::TRACE, "This is a TRACE log.");
+    logger.write_log(Logging::Severity::INFO, "This is a INFO log.");
+    logger.write_log(Logging::Severity::DEBUG, "This is a DEBUG log.");
+    logger.write_log(Logging::Severity::WARNING, "This is a WARNING log.");
+    logger.write_log(Logging::Severity::ERROR, "This is a ERROR log.");
+    logger.write_log(Logging::Severity::FATAL, "This is a FATAL log.");
+
+    /* logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a small HEADER test.");
     logger.write_log<Logging::Edit::TextType::HEADER>(Logging::Severity::INFO, "This is a huuuuuuuuuuuge HEADER test, to check if the double line is correct.");
 
     logger.write_log<Logging::Edit::TextType::SUB_HEADER>(Logging::Severity::INFO, "This is a small SUB-HEADER test.");
@@ -40,7 +49,7 @@ int main(int argc, char* argv[])
     logger.write_log(Logging::Severity::WARNING, "This is a small warning test.");
     logger.write_log(Logging::Severity::ERROR, "This is a small error test.");
     logger.write_log(Logging::Severity::FATAL, "This is a small fatal test.");
-
+ */
     return 0;
 }
 

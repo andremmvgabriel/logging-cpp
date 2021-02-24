@@ -74,28 +74,28 @@ namespace Logging
     {
         enum class Setting
         {
-            LOGS_DIRECTORY,
-            FILE_NAME,
-            FILE_SIZE,
-            LINE_SIZE,
-            TIME_TEMPLATE,
-            LOG_TEMPLATE
+            LOGS_DIRECTORY,         // Directory to save logs
+            FILE_NAME,              // Base name of the logs
+            FILE_SIZE,              // Size of the log files
+            LINE_SIZE,              // Size of each log line
+            TIME_TEMPLATE,          // Template of the timestamp
+            LOG_TEMPLATE            // Template of the log
         };
 
         enum class LogTemplate
         {
             SEV_MSG         = 0,    // [Severity] Message
-            TIME_SEV_MSG    = 1,    // [Time][Severity] Message
-            SEV_TIME_MSG    = 2,    // [Severity][Time] Message
-            SEV_MSG_TIME    = 4     // [Severity] Message [Time]
+            TIME_SEV_MSG    = 1,    // [Timestamp][Severity] Message
+            SEV_TIME_MSG    = 2,    // [Severity][Timestamp] Message
+            SEV_MSG_TIME    = 4     // [Severity] Message [Timestamp]
         };
         
         enum class TimestampTemplate
         {
-            NONE,
-            TIME,
-            CALENDAR_TIME,
-            CALENDAR_YEAR_TIME,
+            NONE,                   // No timestamp
+            TIME,                   // [hh:mm::ss]
+            CALENDAR_TIME,          // [Week Month Day hh::mm::ss]
+            CALENDAR_YEAR_TIME,     // [Week Month Day Year hh::mm::ss]
         };
 
         enum class TextType

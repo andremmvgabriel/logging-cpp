@@ -292,23 +292,15 @@ bool Logging::Logger::openLogFile() {
 }
 
 void Logging::Logger::setSetting(Edit::Setting setting, const std::string &value) {
+    if (isWorking) {
+        throw std::runtime_error("You cannot change a setting once the logger was initiated.");
+    }
+
     switch (setting)
     {
     case Edit::Setting::LOGS_DIRECTORY:
         // Change the Log Directory setting
         defaultSettings.logs_directory = value;
-
-        // Changes the log folder
-        checkLogsDirectory();
-
-        // Restarts the log counter
-        counter_log_files = 0;
-
-        // Creates the log file
-        openLogFile();
-
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Logs directory was successfully changed to " + value + ".");
 
         break;
     
@@ -316,29 +308,25 @@ void Logging::Logger::setSetting(Edit::Setting setting, const std::string &value
         // Change the Log Directory setting
         defaultSettings.file_name = value;
 
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Logs file name successfully changed to " + value + ".");
-
         break;
     
     default:
         std::cerr << "> The input logger setting was not recognized. Default / previous setting will remain active." << std::endl;
-
-        write_log(Severity::WARNING, "Input logger setting not recognized. Default / previous setting will remain active.");
         
         break;
     }
 }
 
 void Logging::Logger::setSetting(Edit::Setting setting, int value){
+    if (isWorking) {
+        throw std::runtime_error("You cannot change the settings once the logger was initiated.");
+    }
+
     switch (setting)
     {
     case Edit::Setting::FILE_SIZE:
         // Change the Log Directory setting
         defaultSettings.max_file_size = value;
-
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Maximum log file size was successfully changed to " + std::to_string(value) + " bytes.");
 
         break;
     
@@ -346,18 +334,11 @@ void Logging::Logger::setSetting(Edit::Setting setting, int value){
         // Change the Log Directory setting
         defaultSettings.max_line_size = value;
 
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Maximum line size was successfully changed to " + std::to_string(value) + " characters.");
-
         break;
 
     case Edit::Setting::MULTIPLE_LINES:
         // Change the Log Directory setting
         defaultSettings.allow_multiple_line_logs = (bool)value;
-
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO,
-        "Multiple lines log setting was set to " + std::to_string(value) + ".");
 
         break;
 
@@ -365,24 +346,16 @@ void Logging::Logger::setSetting(Edit::Setting setting, int value){
         // Change the Log Directory setting
         defaultSettings.log_template = (Edit::LogTemplate)value;
 
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Logs template name successfully changed to: " + Utils::Dictionary::log_templates.at((Edit::LogTemplate)value));
-
         break;
     
     case Edit::Setting::TIME_TEMPLATE:
         // Change the Log Directory setting
         defaultSettings.timestamp_template = (Edit::TimestampTemplate)value;
 
-        // Logs into the file (if it was already initialized)
-        write_log(Severity::INFO, "Timestamp template was successfully changed to: " + Utils::Dictionary::timestamp_templates.at((Edit::TimestampTemplate)value));
-
         break;
     
     default:
         std::cerr << "> The input logger setting was not recognized. Default / previous setting will remain active." << std::endl;
-
-        write_log(Severity::WARNING, "Input logger setting not recognized. Default / previous setting will remain active.");
         
         break;
     }

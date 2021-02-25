@@ -28,12 +28,6 @@ int main(int argc, char* argv[])
 
     logger.write_log<Logging::Edit::TextType::SUB_HEADER>( Logging::Severity::INFO, "This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header." );
 
-    logger.setSetting(Logging::Edit::Setting::MULTIPLE_LINES, true);
-
-    logger.write_log<Logging::Edit::TextType::HEADER>( Logging::Severity::INFO, "This is a huge Header. This is a huge Header. This is a huge Header. This is a huge Header." );
-
-    logger.write_log<Logging::Edit::TextType::SUB_HEADER>( Logging::Severity::INFO, "This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header." );
-
     /* logger.write_log(Logging::Severity::TRACE, "This is a TRACE log.");
     logger.write_log(Logging::Severity::INFO, "This is a INFO log.");
     logger.write_log(Logging::Severity::DEBUG, "This is a DEBUG log.");

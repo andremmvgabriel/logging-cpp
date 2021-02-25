@@ -16,15 +16,23 @@ int main(int argc, char* argv[])
         "logs/",
         "my_log_file",
         100000000,
-        100,
+        50,
         false,
-        Logging::Edit::TimestampTemplate::NONE,
-        Logging::Edit::LogTemplate::SEV_MSG
+        Logging::Edit::TimestampTemplate::TIME,
+        Logging::Edit::LogTemplate::SEV_MSG_TIME
     });
 
     logger.init();
 
-    logger.write_log( Logging::Severity::INFO, "My first log example." );
+    logger.write_log<Logging::Edit::TextType::HEADER>( Logging::Severity::INFO, "This is a huge Header. This is a huge Header. This is a huge Header. This is a huge Header." );
+
+    logger.write_log<Logging::Edit::TextType::SUB_HEADER>( Logging::Severity::INFO, "This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header." );
+
+    logger.setSetting(Logging::Edit::Setting::MULTIPLE_LINES, true);
+
+    logger.write_log<Logging::Edit::TextType::HEADER>( Logging::Severity::INFO, "This is a huge Header. This is a huge Header. This is a huge Header. This is a huge Header." );
+
+    logger.write_log<Logging::Edit::TextType::SUB_HEADER>( Logging::Severity::INFO, "This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header. This is a huge Sub-Header." );
 
     /* logger.write_log(Logging::Severity::TRACE, "This is a TRACE log.");
     logger.write_log(Logging::Severity::INFO, "This is a INFO log.");

@@ -38,7 +38,7 @@ namespace Logging
             FILE_NAME,              // Base name of the logs
             FILE_SIZE,              // Size of the log files
             LINE_SIZE,              // Size of each log line
-            ALLOW_MULTIPLE_LINES,   // Allow a log to fill multiple lines
+            MULTIPLE_LINES,         // Allow a log to fill multiple lines
             TIME_TEMPLATE,          // Template of the timestamp
             LOG_TEMPLATE            // Template of the log
         };
@@ -53,10 +53,9 @@ namespace Logging
         
         enum class TimestampTemplate
         {
-            NONE,                   // No timestamp
             TIME,                   // [hh:mm::ss]
-            CALENDAR_TIME,          // [Week Month Day hh::mm::ss]
-            CALENDAR_YEAR_TIME,     // [Week Month Day Year hh::mm::ss]
+            CALENDAR_TIME,          // [Week Month Day][hh::mm::ss]
+            CALENDAR_YEAR_TIME,     // [Week Month Day Year][hh::mm::ss]
         };
 
         enum class TextType
@@ -124,10 +123,9 @@ namespace Logging
             };
 
             static std::unordered_map<Edit::TimestampTemplate, std::string> timestamp_templates {
-                {Edit::TimestampTemplate::NONE, "No timestamp"},
                 {Edit::TimestampTemplate::TIME, "[hh::mm::ss]"},
-                {Edit::TimestampTemplate::CALENDAR_TIME, "[week month day hh::mm::ss]"},
-                {Edit::TimestampTemplate::CALENDAR_YEAR_TIME, "[week month day year hh::mm::ss]"}
+                {Edit::TimestampTemplate::CALENDAR_TIME, "[week month day][hh::mm::ss]"},
+                {Edit::TimestampTemplate::CALENDAR_YEAR_TIME, "[week month day year][hh::mm::ss]"}
             };
         } // namespace Dictionary        
     } // namespace Utils    
@@ -147,7 +145,7 @@ namespace Logging
             5000000,                        // Max file size (in bytes)
             66,                             // Max line size - 66 characters
             true,                           // Allow logs for multiple lines
-            Edit::TimestampTemplate::NONE,  // No timestamp
+            Edit::TimestampTemplate::TIME,  // Time only timestamp
             Edit::LogTemplate::SEV_MSG,     // Log as Severity + Message
         };
     
@@ -353,7 +351,7 @@ void Logging::Logger::setSetting(Edit::Setting setting, int value){
 
         break;
 
-    case Edit::Setting::ALLOW_MULTIPLE_LINES:
+    case Edit::Setting::MULTIPLE_LINES:
         // Change the Log Directory setting
         defaultSettings.allow_multiple_line_logs = (bool)value;
 
@@ -408,7 +406,7 @@ void Logging::Logger::checkLogFileSize() {
 
 std::string Logging::Logger::makeTimestamp() {
     // If the user does not want a timestamp
-    if (defaultSettings.timestamp_template == Logging::Edit::TimestampTemplate::NONE) { return ""; }
+    if (defaultSettings.log_template == Logging::Edit::LogTemplate::SEV_MSG) { return ""; }
 
     // Gets the time since epoch
     std::time_t time_since_epoch = std::time(nullptr);
@@ -534,6 +532,9 @@ void Logging::Logger::write_header_log(const std::string &initiation, std::strin
                 writting = false;
             }
             else {
+                // If the message starts with a space, remove it
+                if (message[0] == ' ') { message.erase(message.begin()); }
+
                 // Gets the current part of the message
                 std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size - 4);
 
@@ -545,6 +546,9 @@ void Logging::Logger::write_header_log(const std::string &initiation, std::strin
             }
         }
         else {
+            // If the message starts with a space, remove it
+            if (message[0] == ' ') { message.erase(message.begin()); }
+                
             // Centers the text
             TextUtils::Alignment::center(message, defaultSettings.max_line_size - 4);
 
@@ -595,6 +599,9 @@ void Logging::Logger::write_sub_header_log(const std::string &initiation, std::s
                 writting = false;
             }
             else {
+                // If the message starts with a space, remove it
+                if (message[0] == ' ') { message.erase(message.begin()); }
+                
                 // Gets the current part of the message
                 std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size - 8);
 
@@ -606,6 +613,9 @@ void Logging::Logger::write_sub_header_log(const std::string &initiation, std::s
             }
         }
         else {
+            // If the message starts with a space, remove it
+            if (message[0] == ' ') { message.erase(message.begin()); }
+                
             // Centers the text
             TextUtils::Alignment::center(message, defaultSettings.max_line_size - 8);
 
@@ -650,6 +660,9 @@ void Logging::Logger::write_normal_log(const std::string &initiation, std::strin
                 writting = false;
             }
             else {
+                // If the message starts with a space, remove it
+                if (message[0] == ' ') { message.erase(message.begin()); }
+                
                 // Gets the current part of the message
                 std::string cur_part(message.begin(), message.begin() + defaultSettings.max_line_size);
 
@@ -661,6 +674,9 @@ void Logging::Logger::write_normal_log(const std::string &initiation, std::strin
             }
         }
         else {
+            // If the message starts with a space, remove it
+            if (message[0] == ' ') { message.erase(message.begin()); }
+                
             // Centers the text
             TextUtils::Alignment::left(message, defaultSettings.max_line_size);
 

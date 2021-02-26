@@ -150,7 +150,7 @@ namespace Logging
         };
     
     private:
-        bool checkLogsDirectory();
+        void checkLogsDirectory();
         bool openLogFile();
         void checkLogFileSize();
 
@@ -259,7 +259,7 @@ Logging::Logger::~Logger() {
 
 void Logging::Logger::init() {
     // Checks the logs directory
-    if (!checkLogsDirectory()) { std::cerr << "> Logger not initialized. Could not create the directory for the log files." << std::endl; return; }
+    checkLogsDirectory();
 
     // Opens the log file
     if (!openLogFile()) { std::cerr << "> Logger not initialized. Log file could not be opened." << std::endl; return; }
@@ -268,12 +268,12 @@ void Logging::Logger::init() {
     isWorking = true;
 }
 
-bool Logging::Logger::checkLogsDirectory() {
+void Logging::Logger::checkLogsDirectory() {
     // Removes any previous logs, if any exist
-    boost::filesystem::remove_all(defaultSettings.logs_directory);
+    //boost::filesystem::remove_all(defaultSettings.logs_directory);
 
     // Creates the logs directory
-    return boost::filesystem::create_directory(defaultSettings.logs_directory);
+    boost::filesystem::create_directory(defaultSettings.logs_directory);
 }
 
 bool Logging::Logger::openLogFile() {

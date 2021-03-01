@@ -1,4 +1,4 @@
-#include "TextUtils.hpp"
+/* #include "TextUtils.hpp"
 
 void TextUtils::Alignment::left(std::string &msg, const int width) {
     if (msg.size() <= width) {
@@ -52,3 +52,4 @@ void TextUtils::Alignment::center(std::string &msg, const int width) {
 void TextUtils::Alignment::justify(std::string &msg, const int width) {
 
 }
+ */

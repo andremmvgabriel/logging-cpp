@@ -15,7 +15,6 @@ find_package(Boost REQUIRED)
 
 add_executable( Main
     main.cpp
-    TextUtils.cpp
 )
 target_link_libraries( Main
     -lboost_filesystem

@@ -10,11 +10,9 @@ namespace TextUtils
         void left(std::string &msg, const int width) {
             if (msg.size() <= width) {
                 int final_size = width - msg.size();
-                std::string decoy;
                 for (int i = 0; i < final_size; i++) {
-                    decoy.push_back(' ');
+                    msg.push_back(' ');
                 }
-                msg.insert(msg.begin(), decoy.begin(), decoy.end());
             }
             else {
                 int remove_size = msg.size() - width - 1;

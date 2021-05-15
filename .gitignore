@@ -36,3 +36,4 @@ build/*
 logs/*
 bin/*
 lib/*
+docs/*

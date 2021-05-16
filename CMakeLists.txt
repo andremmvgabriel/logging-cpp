@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Set the project name (and version?)
-project(Logger)
+project(Logging)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 14)

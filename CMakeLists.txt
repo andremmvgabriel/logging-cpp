@@ -16,29 +16,12 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
 
 INCLUDE_DIRECTORIES ( include )
 
-set( src_logger_lib
-    src/Logger.cpp
-)
-add_library( Logger STATIC ${src_logger_lib} )
-target_link_libraries( Logger
-    -lboost_filesystem
-    -lboost_system
-)
-
 set( src_logging_lib
     src/logging.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
 target_link_libraries( logging
     -lboost_filesystem
-    #-lboost_system
-)
-
-add_executable( Main
-    main.cpp
-)
-target_link_libraries( Main    
-    Logger
 )
 
 add_subdirectory( examples )

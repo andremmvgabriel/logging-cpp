@@ -283,18 +283,18 @@ void logging::Logger::_write_log(logging::Severity severity, const std::string &
                 message += " (...)";
             }
         }
-    }
 
-    if (text_alignment == logging::utils::TextAligment::LEFT) {
-        logging::utils::text_alignment::left(message, _settings.max_line_size - pre_message.size() - pos_message.size());
-    }
-    else if (text_alignment == logging::utils::TextAligment::RIGHT) {
-        logging::utils::text_alignment::right(message, _settings.max_line_size - pre_message.size() - pos_message.size());
-    }
-    else if (text_alignment == logging::utils::TextAligment::CENTER) {
-        logging::utils::text_alignment::center(message, _settings.max_line_size - pre_message.size() - pos_message.size());
-    }
-    else if (text_alignment == logging::utils::TextAligment::JUSTIFY) {
+        if (text_alignment == logging::utils::TextAligment::LEFT) {
+            logging::utils::text_alignment::left(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        }
+        else if (text_alignment == logging::utils::TextAligment::RIGHT) {
+            logging::utils::text_alignment::right(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        }
+        else if (text_alignment == logging::utils::TextAligment::CENTER) {
+            logging::utils::text_alignment::center(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        }
+        else if (text_alignment == logging::utils::TextAligment::JUSTIFY) {
+        }
     }
 
     // Appends the message together

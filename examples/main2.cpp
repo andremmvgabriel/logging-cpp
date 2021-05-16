@@ -8,8 +8,8 @@ int main()
         "../logs/",
         "log_file_name",
         1000,
-        50,
-        true,
+        30,
+        false,
         logging::opts::LogTemplate::SEV_MSG_TIME,
         logging::opts::TimestampTemplate::CALENDAR_YEAR_TIME
     } );

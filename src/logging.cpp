@@ -1,6 +1,6 @@
 #include <logging.hpp>
 
-void logging::utils::text_alignment::left(std::string &msg, const int width) {
+void gabe::logging::utils::text_alignment::left(std::string &msg, const int width) {
     // Checks if the size of the message is within the given width
     if (msg.size() <= width) {
         int final_size = width - msg.size();
@@ -16,7 +16,7 @@ void logging::utils::text_alignment::left(std::string &msg, const int width) {
     }
 }
 
-void logging::utils::text_alignment::right(std::string &msg, const int width) {
+void gabe::logging::utils::text_alignment::right(std::string &msg, const int width) {
     if (msg.size() <= width) {
         int final_size = width - msg.size();
         std::string decoy;
@@ -33,7 +33,7 @@ void logging::utils::text_alignment::right(std::string &msg, const int width) {
     }
 }
 
-void logging::utils::text_alignment::center(std::string &msg, const int width) {
+void gabe::logging::utils::text_alignment::center(std::string &msg, const int width) {
     if (msg.size() <= width) {
         int decoy1_size = (width - msg.size())/2;
         int decoy2_size = width - msg.size() - decoy1_size;
@@ -50,15 +50,15 @@ void logging::utils::text_alignment::center(std::string &msg, const int width) {
     }
 }
 
-void logging::utils::text_alignment::justify(std::string &msg, const int width) {}
+void gabe::logging::utils::text_alignment::justify(std::string &msg, const int width) {}
 
 // ================
 
-logging::Logger::Logger() {}
+gabe::logging::Logger::Logger() {}
 
-logging::Logger::Logger(const logging::opts::Settings& settings) : _settings(settings) {}
+gabe::logging::Logger::Logger(const gabe::logging::opts::Settings& settings) : _settings(settings) {}
 
-logging::Logger::Logger(logging::Logger&& logger) {
+gabe::logging::Logger::Logger(gabe::logging::Logger&& logger) {
     // Closes the log file if it is opened
     _log_file.close();
 
@@ -66,7 +66,7 @@ logging::Logger::Logger(logging::Logger&& logger) {
     _log_file = std::move(logger._log_file);
 }
 
-logging::Logger& logging::Logger::operator = (logging::Logger&& logger) {
+gabe::logging::Logger& gabe::logging::Logger::operator = (gabe::logging::Logger&& logger) {
     // Closes the log file if it is opened
     if (_log_file.is_open()) { _log_file.close(); }
 
@@ -76,12 +76,12 @@ logging::Logger& logging::Logger::operator = (logging::Logger&& logger) {
     return *this;
 }
 
-logging::Logger::~Logger() {
+gabe::logging::Logger::~Logger() {
     // Closes the log file if it is opened
     if (_log_file.is_open()) { _log_file.close(); }
 }
 
-void logging::Logger::init() {
+void gabe::logging::Logger::init() {
     // Creates the logs directory (if it exists, this function does nothing)
     boost::filesystem::create_directory ( _settings.logs_dir );
 
@@ -94,7 +94,7 @@ void logging::Logger::init() {
     _is_working = true;
 }
 
-bool logging::Logger::_open_log_file() {
+bool gabe::logging::Logger::_open_log_file() {
     // Closes the log file if it is opened
     if (_log_file.is_open()) { _log_file.close(); }
 
@@ -106,9 +106,9 @@ bool logging::Logger::_open_log_file() {
     return !_log_file.fail();
 }
 
-std::string logging::Logger::_make_timestamp() {
+std::string gabe::logging::Logger::_make_timestamp() {
     // Exits if the user does not want a timestamp
-    if (_settings.log_template == logging::opts::LogTemplate::SEV_MSG) {
+    if (_settings.log_template == gabe::logging::opts::LogTemplate::SEV_MSG) {
         return ""; // Empty timestamp
     }
 
@@ -141,7 +141,7 @@ std::string logging::Logger::_make_timestamp() {
     return timestamp;
 }
 
-std::string logging::Logger::_get_calendar(std::tm* tm, bool include_year) {
+std::string gabe::logging::Logger::_get_calendar(std::tm* tm, bool include_year) {
     // Calendar variable that will be outputted
     std::string calendar;
 
@@ -172,7 +172,7 @@ std::string logging::Logger::_get_calendar(std::tm* tm, bool include_year) {
     return calendar;
 }
 
-std::string logging::Logger::_get_time(std::tm* tm) {
+std::string gabe::logging::Logger::_get_time(std::tm* tm) {
     // Time variable that will be outputted
     std::string time;
 
@@ -194,7 +194,7 @@ std::string logging::Logger::_get_time(std::tm* tm) {
     return time;
 }
 
-void logging::Logger::_check_file_size() {
+void gabe::logging::Logger::_check_file_size() {
     // Checks if the current log file has reached the maximum size imposed
     if (_log_file.tellp() >= _settings.max_file_size) {
         // Opens a new log file
@@ -207,33 +207,33 @@ void logging::Logger::_check_file_size() {
     }
 }
 
-void logging::Logger::_write_header_log(logging::Severity severity, const std::string &message) {
+void gabe::logging::Logger::_write_header_log(gabe::logging::Severity severity, const std::string &message) {
     // Creates the extra strings needed for the header style
     std::string empty_line( _settings.max_line_size <= 0 ? message.size() + 4 : _settings.max_line_size, ' ' );
     std::string separ_line( _settings.max_line_size <= 0 ? message.size() + 4 : _settings.max_line_size, '*' );
 
     // Writes the extra strings
-    _write_log(severity, "", empty_line, "", logging::utils::TextAligment::CENTER);
-    _write_log(severity, "", separ_line, "", logging::utils::TextAligment::CENTER);
+    _write_log(severity, "", empty_line, "", gabe::logging::utils::TextAligment::CENTER);
+    _write_log(severity, "", separ_line, "", gabe::logging::utils::TextAligment::CENTER);
 
     // Writes the log message(s)
-    _write_log(severity, "* ", message, " *", logging::utils::TextAligment::CENTER);
+    _write_log(severity, "* ", message, " *", gabe::logging::utils::TextAligment::CENTER);
 
     // Finishes the Header logging with the separator extra string
-    _write_log(severity, "", separ_line, "", logging::utils::TextAligment::CENTER);
+    _write_log(severity, "", separ_line, "", gabe::logging::utils::TextAligment::CENTER);
 }
 
-void logging::Logger::_write_subheader_log(logging::Severity severity, const std::string &message) {
+void gabe::logging::Logger::_write_subheader_log(gabe::logging::Severity severity, const std::string &message) {
     // Writes the log message(s)
-    _write_log(severity, "~~~~> ", message, " <~~~~", logging::utils::TextAligment::CENTER);
+    _write_log(severity, "~~~~> ", message, " <~~~~", gabe::logging::utils::TextAligment::CENTER);
 }
 
-void logging::Logger::_write_normal_log(logging::Severity severity, const std::string &message) {
+void gabe::logging::Logger::_write_normal_log(gabe::logging::Severity severity, const std::string &message) {
     // Writes the log message(s)
-    _write_log(severity, "", message, "", logging::utils::TextAligment::LEFT);
+    _write_log(severity, "", message, "", gabe::logging::utils::TextAligment::LEFT);
 }
 
-void logging::Logger::_write_log(logging::Severity severity, const std::string &pre_message, std::string message, const std::string &pos_message, utils::TextAligment text_alignment) {
+void gabe::logging::Logger::_write_log(gabe::logging::Severity severity, const std::string &pre_message, std::string message, const std::string &pos_message, utils::TextAligment text_alignment) {
     // Gets the beginning and the end of the log
     std::string log_begin = _make_begin_log(severity);
     std::string log_end = _make_end_log();
@@ -277,23 +277,23 @@ void logging::Logger::_write_log(logging::Severity severity, const std::string &
         else {
             // Checks if the message has to much size
             if (size_to_remove > 0) {
-                logging::utils::text_alignment::left(message, message.size() - size_to_remove - 6);
+                gabe::logging::utils::text_alignment::left(message, message.size() - size_to_remove - 6);
 
                 // Adds the indicator of message cutted
                 message += " (...)";
             }
         }
 
-        if (text_alignment == logging::utils::TextAligment::LEFT) {
-            logging::utils::text_alignment::left(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        if (text_alignment == gabe::logging::utils::TextAligment::LEFT) {
+            gabe::logging::utils::text_alignment::left(message, _settings.max_line_size - pre_message.size() - pos_message.size());
         }
-        else if (text_alignment == logging::utils::TextAligment::RIGHT) {
-            logging::utils::text_alignment::right(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        else if (text_alignment == gabe::logging::utils::TextAligment::RIGHT) {
+            gabe::logging::utils::text_alignment::right(message, _settings.max_line_size - pre_message.size() - pos_message.size());
         }
-        else if (text_alignment == logging::utils::TextAligment::CENTER) {
-            logging::utils::text_alignment::center(message, _settings.max_line_size - pre_message.size() - pos_message.size());
+        else if (text_alignment == gabe::logging::utils::TextAligment::CENTER) {
+            gabe::logging::utils::text_alignment::center(message, _settings.max_line_size - pre_message.size() - pos_message.size());
         }
-        else if (text_alignment == logging::utils::TextAligment::JUSTIFY) {
+        else if (text_alignment == gabe::logging::utils::TextAligment::JUSTIFY) {
         }
     }
 
@@ -308,12 +308,12 @@ void logging::Logger::_write_log(logging::Severity severity, const std::string &
     _log_file.write( log_middle.c_str(), log_middle.size() );
 }
 
-std::string logging::Logger::_make_begin_log(logging::Severity severity) {
+std::string gabe::logging::Logger::_make_begin_log(gabe::logging::Severity severity) {
     // Log variable of the log beginning that will be outputted
     std::string log_begin;
 
     // Checks if the log template has the time in the beginning
-    if (_settings.log_template == logging::opts::LogTemplate::TIME_SEV_MSG) {
+    if (_settings.log_template == gabe::logging::opts::LogTemplate::TIME_SEV_MSG) {
         // Inserts the timestamp in the beginning
         log_begin += _make_timestamp();
     }
@@ -322,7 +322,7 @@ std::string logging::Logger::_make_begin_log(logging::Severity severity) {
     log_begin += utils::dicts::severity_levels.at(severity);
 
     // Checks if the log template has the time after the Severity
-    if (_settings.log_template == logging::opts::LogTemplate::SEV_TIME_MSG) {
+    if (_settings.log_template == gabe::logging::opts::LogTemplate::SEV_TIME_MSG) {
         // Inserts the timestamp after the Severity
         log_begin += _make_timestamp();
     }
@@ -333,12 +333,12 @@ std::string logging::Logger::_make_begin_log(logging::Severity severity) {
     return log_begin;
 }
 
-std::string logging::Logger::_make_end_log() {
+std::string gabe::logging::Logger::_make_end_log() {
     // Log variable of the log end that will be outputted
     std::string log_end;
 
     // Checks if the log template has the time at the end
-    if (_settings.log_template == logging::opts::LogTemplate::SEV_MSG_TIME) {
+    if (_settings.log_template == gabe::logging::opts::LogTemplate::SEV_MSG_TIME) {
         // Adds the timestamp at the end
         log_end += " " + _make_timestamp();
     }

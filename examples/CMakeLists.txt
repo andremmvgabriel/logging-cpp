@@ -6,9 +6,10 @@ project(Logging_Examples)
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable( Main2
-    main2.cpp
+add_executable( Main
+    main.cpp
 )
-target_link_libraries ( Main2
+target_link_libraries ( Main
     logging
+    -lboost_filesystem
 )

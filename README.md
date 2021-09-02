@@ -1,70 +1,77 @@
-# Logger
+- [I. Introduction](#i-introduction)
+- [II. Platforms](#ii-platforms)
+- [III. How to use it + usage samples](#iii-how-to-use-it--usage-samples)
+  - [1. Initiate the logger](#1-initiate-the-logger)
+  - [2. Logger settings](#2-logger-settings)
+  - [3. Basic logs](#3-basic-logs)
+  - [4. Timestamps](#4-timestamps)
+  - [5. Log print: One line Vs Multiple lines](#5-log-print-one-line-vs-multiple-lines)
+  - [6. Maximum log file size](#6-maximum-log-file-size)
+  - [7. Header and sub-header log options](#7-header-and-sub-header-log-options)
+
+----------------------
+
+# I. Introduction
 
 This Logger is very simple and easy to be used. 
 
-## Platforms
-
--------------
+# II. Platforms
 
 Currently, the Logger can only be used in Linux platforms.
 
-## How to use it + usage samples
+# III. How to use it + usage samples
 
---------------
-
-#### 1. Initiate the logger
-
-
+## 1. Initiate the logger
 
 To initiate the logger, you only need to create the object and use the init function, as such:
 
-```
-#include "Logger.hpp"
+``` cpp
+#include "logging.hpp"
 
 int main() {
     // Creates the logger object
-    Logging::Logger logger;
+    gabe::logging::Logger logger;
 
     // Initiates the logger
     logger.init();
 }
 ```
 
-#### 2. Logger settings
+## 2. Logger settings
 
-The logger has 7 settings parameters that can be set by the user. These settings are defined in the following enumerator:
+The logger has 7 settings parameters that can be set by the user:
 
-```
-enum class Setting
-{
-    LOGS_DIRECTORY,         // Directory to save logs
-    FILE_NAME,              // Base name of the logs
-    FILE_SIZE,              // Size of the log files
-    LINE_SIZE,              // Size of each log line
-    MULTIPLE_LINES,         // Allow a log to fill multiple lines
-    TIME_TEMPLATE,          // Template of the timestamp
-    LOG_TEMPLATE            // Template of the log
-};
-```
+1. The directory to save the logs in;
+2. The name of the logs files;
+3. The maximum size of a log file;
+4. The maximum line size inside the logs;
+5. Allowence to print a log line into multiple lines (if reaches maximum parameter in 4.);
+6. Template of the timestamp;
+7. Template of Severity.
 
 By default, these assume the following values:
 
-```
+``` cpp
 {
     "logs/",                        // Logs directory
     "log_file",                     // Logs base file name
     5000000,                        // Max file size (in bytes)
-    66,                             // Max line size - 66 characters
+    -1,                             // Max line size - (no max size / "infinite" characters)
     true,                           // Allow logs for multiple lines
-    Edit::TimestampTemplate::TIME,  // Time only timestamp
-    Edit::LogTemplate::SEV_MSG,     // Log as Severity + Message
+    opts::TimestampTemplate::TIME,  // Time only timestamp
+    opts::LogTemplate::SEV_MSG,     // Log as Severity + Message
 };
 ```
 
 If the user desires to change a setting, it should be done before initiating the logger. These settings can be changed individually, or all at once if preferred. The following code shows how to do both:
 
-```
-#include "Logger.hpp"
+``` cpp
+#include "logging.hpp"
+
+// You can make typedefs to make your life easier
+typedef gabe::logging::Logger Logger;
+typedef gabe::logging::opts::LogTemplate LogTemplate;
+typedef gabe::logging::opts::TimestampTemplate TimeTemplate;
 
 int main() {
     // Creates the logger object
@@ -77,43 +84,43 @@ int main() {
         1000000000000,
         100,
         false,
-        Logging::Edit::TimestampTemplate::TIME,
-        Logging::Edit::LogTemplate::TIME_SEV_MSG
+        TimeTemplate::TIME,
+        LogTemplate::TIME_SEV_MSG
     });
-
-    // Change a specific setting
-    logger.setSetting(
-        Logging::Edit::Setting::FILE_SIZE,
-        123456789
-    );
 
     // Initiates the logger
     logger.init();
 }
 ```
 
-#### 3. Basic logs
+***Note:*** Currently if you want to change a specific setting, you will have to insert the default values of all the others settings on the creation of the Logger object. However, it is planned to implement a setting change methodology to change individually each one. But for now, you will have to use as it is... Sorry about that :/
+
+## 3. Basic logs
 
 To write a log, the user only has to call the write_log function, as following:
 
-```
-#include "Logger.hpp"
+``` cpp
+#include "logging.hpp"
+
+// You can make typedefs to make your life easier
+typedef gabe::logging::Logger Logger;
+typedef gabe::logging::Severity logSev;
 
 int main() {
     // Creates the logger object
-    Logging::Logger logger;
+    Logger logger;
 
     // Initiates the logger
     logger.init();
 
     // Writes a log
-    logger.write_log( Logging::Severity::INFO, "My first log example." );
+    logger.write_log( logSev::INFO, "My first log example." );
 }
 ```
 
 ***Output:***
 
-```
+``` txt
 [ info  ] My first log example.                                                                               
 ```
 
@@ -121,7 +128,7 @@ As can be seen in the example, to be able to use the write_log function, a sever
 
 There are several severity levels that can be specified for logging:
 
-```
+``` cpp
 enum class Severity
 {
     TRACE   = 1,
@@ -144,7 +151,7 @@ enum class Severity
 [ fatal ] This is a FATAL log.   
 ```
 
-#### 4. Timestamps
+## 4. Timestamps
 
 If it is important to have a timestamp attached with each printed log, the first that has to be done is to change the log template and allow the timestamp to be printed. There are four log templates available to be choose:
 
@@ -191,7 +198,7 @@ enum class TimestampTemplate
 [Thu Feb 25 2021][09:28:28][ info  ] Calendar, year, and time in the timestamp.
 ```
 
-#### 5. Log print: One line Vs Multiple lines
+## 5. Log print: One line Vs Multiple lines
 
 This feature is mainly a customization preference for the user, and it is defined by the setting ***MULTIPLE_LINES***, which, by default, is set as true. The behaviour of this feature is also dependent of the setting ***LINE_SIZE***. Basically, if the user log message is bigger than the maximum size of the line, it will insert a '(...)' at the end of the log, and the just the beggining of the specified message will be printed. The following output shows the behaviour of the multiple lines setting as off and on, respectively, for a maximum line size of 50 characters and for the same log message.
 
@@ -202,18 +209,22 @@ This feature is mainly a customization preference for the user, and it is define
 [ info  ] the behaviour of the MULTIPLE LINES setting.       [10:02:08]
 ```
 
-#### 6. Maximum log file size
+## 6. Maximum log file size
 
 The maximum file size is defined by the setting ***FILE_SIZE***. If at a certain point the log file reaches the maximum size, it will safely close the file and open a new one, without overwriting the previous one. 
 
 **Note:** if at some instance a log file has, for example, only 50 bytes left to reach the maximum file size, and the log message has 200 bytes, don't worry, the log will not be split into the two log files. It will write the whole message in the current log file, and then proceed to open a new file for future logs.
 
-#### 7. Header and sub-header log options
+## 7. Header and sub-header log options
 
 Last but not least, the headers and the sub-headers. Lets think of the headers and sub-headers as two properties of the log in order to make the whole file more easy to read and identify wanted logs. All the log prints shown before are the default prints that are printed with the default calling of the write_log function. However, if the user wants to print the log as a header, he has to specify the header in the write_log function, as following:
 
-```
-logger.write_log<Logging::Edit::TextType::HEADER>( Logging::Severity::INFO, "This is a Header." );
+``` cpp
+// You can make typedefs to make your life easier
+typedef gabe::logging::opts::TextType TextType;
+typedef gabe::logging::Severity logSev;
+
+logger.write_log<TextType::HEADER>( logSev::INFO, "This is a Header." );
 
 /* Output:
 [ info  ]                                                    [10:19:57]
@@ -227,8 +238,12 @@ As can be seen, the header message log is surrounded by '*' characters, in order
 
 Now lets check the same write_log but for a sub-header:
 
-```
-logger.write_log<Logging::Edit::TextType::HEADER>( Logging::Severity::INFO, "This is a Header." );
+``` cpp
+// You can make typedefs to make your life easier
+typedef gabe::logging::opts::TextType TextType;
+typedef gabe::logging::Severity logSev;
+
+logger.write_log<TextType::HEADER>( logSev::INFO, "This is a Header." );
 
 /* Output:
 [ info  ] ~~~           This is a Sub-Header.            ~~~ [10:22:41]

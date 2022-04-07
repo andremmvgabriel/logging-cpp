@@ -124,6 +124,9 @@ namespace gabe
             std::ofstream _log_file;
             /**<Log file.*/
 
+            Severity _severity;
+            /**<Logging severity.*/
+
             opts::Settings _settings = {
                 "logs/",
                 "log_file",
@@ -171,9 +174,15 @@ namespace gabe
             /**
              * @brief 
              * 
+             */
+            Logger(const Severity& severity);
+
+            /**
+             * @brief 
+             * 
              * @param settings 
              */
-            Logger(const opts::Settings& settings);
+            Logger(const Severity& severity, const opts::Settings& settings);
 
             /**
              * @brief Copy constructor.
@@ -227,6 +236,8 @@ namespace gabe
                     else { throw std::runtime_error("> Log text type was not recognized."); }
                 }
             }
+
+            void set_severity(const Severity& severity);
         };
     }
 }

@@ -9,17 +9,20 @@ typedef gabe::logging::Severity logSev;
 
 int main()
 {
-    Logger logger;
+    Logger logger(logSev::TRACE);
 
-    Logger logger2( {
-        "../logs/",
-        "log_file_name",
-        1000,
-        30,
-        false,
-        LogTemplate::SEV_MSG_TIME,
-        TimeTemplate::CALENDAR_YEAR_TIME
-    } );
+    Logger logger2(
+        logSev::TRACE,
+        {
+            "../logs/",
+            "log_file_name",
+            1000,
+            30,
+            false,
+            LogTemplate::SEV_MSG_TIME,
+            TimeTemplate::CALENDAR_YEAR_TIME
+        }
+    );
 
     logger.init();
     logger2.init();

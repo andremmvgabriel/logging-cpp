@@ -30,7 +30,7 @@ To initiate the logger, you only need to create the object and use the init func
 
 int main() {
     // Creates the logger object
-    gabe::logging::Logger logger;
+    gabe::logging::Logger logger(gabe::logging::Severity::TRACE);
 
     // Initiates the logger
     logger.init();
@@ -72,10 +72,11 @@ If the user desires to change a setting, it should be done before initiating the
 typedef gabe::logging::Logger Logger;
 typedef gabe::logging::opts::LogTemplate LogTemplate;
 typedef gabe::logging::opts::TimestampTemplate TimeTemplate;
+typedef gabe::logging::Severity logSev;
 
 int main() {
     // Creates the logger object
-    Logging::Logger logger;
+    Logging::Logger logger(logSev::TRACE);
 
     // Change all the settings
     logger.setSettings({
@@ -108,7 +109,7 @@ typedef gabe::logging::Severity logSev;
 
 int main() {
     // Creates the logger object
-    Logger logger;
+    Logger logger(logSev::TRACE);
 
     // Initiates the logger
     logger.init();

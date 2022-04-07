@@ -56,7 +56,9 @@ void gabe::logging::utils::text_alignment::justify(std::string &msg, const int w
 
 gabe::logging::Logger::Logger() {}
 
-gabe::logging::Logger::Logger(const gabe::logging::opts::Settings& settings) : _settings(settings) {}
+gabe::logging::Logger::Logger(const gabe::logging::Severity& severity) : _severity(severity) {}
+
+gabe::logging::Logger::Logger(const gabe::logging::Severity& severity, const gabe::logging::opts::Settings& settings) : _severity(severity), _settings(settings) {}
 
 gabe::logging::Logger::Logger(gabe::logging::Logger&& logger) {
     // Closes the log file if it is opened
@@ -234,6 +236,9 @@ void gabe::logging::Logger::_write_normal_log(gabe::logging::Severity severity, 
 }
 
 void gabe::logging::Logger::_write_log(gabe::logging::Severity severity, const std::string &pre_message, std::string message, const std::string &pos_message, utils::TextAligment text_alignment) {
+    // Severity check
+    if ((uint8_t)severity < (uint8_t)_severity): return;
+
     // Gets the beginning and the end of the log
     std::string log_begin = _make_begin_log(severity);
     std::string log_end = _make_end_log();
@@ -349,3 +354,4 @@ std::string gabe::logging::Logger::_make_end_log() {
     return log_end;
 }
 
+void gabe::logging::Logger::set_severity(const gabe::logging::Severity& severity) { _severity = severity }

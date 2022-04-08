@@ -85,7 +85,7 @@ gabe::logging::Logger::~Logger() {
 
 void gabe::logging::Logger::init() {
     // Creates the logs directory (if it exists, this function does nothing)
-    boost::filesystem::create_directory ( _settings.logs_dir );
+    std::filesystem::create_directory( _settings.logs_dir );
 
     // Opens the log file
     if (!_open_log_file()) {
@@ -237,7 +237,7 @@ void gabe::logging::Logger::_write_normal_log(gabe::logging::Severity severity, 
 
 void gabe::logging::Logger::_write_log(gabe::logging::Severity severity, const std::string &pre_message, std::string message, const std::string &pos_message, utils::TextAligment text_alignment) {
     // Severity check
-    if ((uint8_t)severity < (uint8_t)_severity): return;
+    if ((uint8_t)severity < (uint8_t)_severity) { return; }
 
     // Gets the beginning and the end of the log
     std::string log_begin = _make_begin_log(severity);
@@ -354,4 +354,4 @@ std::string gabe::logging::Logger::_make_end_log() {
     return log_end;
 }
 
-void gabe::logging::Logger::set_severity(const gabe::logging::Severity& severity) { _severity = severity }
+void gabe::logging::Logger::set_severity(const gabe::logging::Severity& severity) { _severity = severity; }

@@ -9,12 +9,12 @@ typedef gabe::logging::Severity logSev;
 
 int main()
 {
-    Logger logger(logSev::TRACE);
+    Logger logger(logSev::DEBUG);
 
     Logger logger2(
-        logSev::TRACE,
+        logSev::DEBUG,
         {
-            "../logs/",
+            "logs/",
             "log_file_name",
             1000,
             30,

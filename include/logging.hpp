@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <mutex>
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 namespace gabe
 {

@@ -4,10 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(Logging)
 
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 14)
-
-# Finds BOOST package
-find_package(Boost REQUIRED)
+set(CMAKE_CXX_STANDARD 20)
 
 # Changes the binary, static lib, and libraries default paths of the CMake build, respectively
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
@@ -20,8 +17,5 @@ set( src_logging_lib
     src/logging.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
-target_link_libraries( logging
-    -lboost_filesystem
-)
 
 add_subdirectory( examples )

@@ -98,7 +98,7 @@ int main() {
 
 ## 3. Basic logs
 
-To write a log, the user only has to call the write_log function, as following:
+To write a log, the user only has to call the log function, as following:
 
 ``` cpp
 #include "logging.hpp"
@@ -115,7 +115,7 @@ int main() {
     logger.init();
 
     // Writes a log
-    logger.write_log( logSev::INFO, "My first log example." );
+    logger.log( logSev::INFO, "My first log example." );
 }
 ```
 
@@ -125,7 +125,7 @@ int main() {
 [ info  ] My first log example.                                                                               
 ```
 
-As can be seen in the example, to be able to use the write_log function, a severity level as to be specified as well as the log message. Since the logger is using the default settings, the output is the most basic log, which is defined by the severity level, in brackets, followed by the message.
+As can be seen in the example, to be able to use the log function, a severity level as to be specified as well as the log message. Since the logger is using the default settings, the output is the most basic log, which is defined by the severity level, in brackets, followed by the message.
 
 There are several severity levels that can be specified for logging:
 
@@ -150,6 +150,17 @@ enum class Severity
 [warning] This is a WARNING log.                       
 [ error ] This is a ERROR log.                         
 [ fatal ] This is a FATAL log.   
+```
+
+If you don't feel like you want to specify the severity of the log on every log line you write, you can also call the functions for each severity level, as following:
+
+``` cpp
+logger.trace("This is a TRACE log.")
+logger.info("This is a INFO log.")
+logger.debug("This is a DEBUG log.")
+logger.warning("This is a WARNING log.")
+logger.error("This is a ERROR log.")
+logger.fatal("This is a FATAL log.")
 ```
 
 ## 4. Timestamps
@@ -218,14 +229,14 @@ The maximum file size is defined by the setting ***FILE_SIZE***. If at a certain
 
 ## 7. Header and sub-header log options
 
-Last but not least, the headers and the sub-headers. Lets think of the headers and sub-headers as two properties of the log in order to make the whole file more easy to read and identify wanted logs. All the log prints shown before are the default prints that are printed with the default calling of the write_log function. However, if the user wants to print the log as a header, he has to specify the header in the write_log function, as following:
+Last but not least, the headers and the sub-headers. Lets think of the headers and sub-headers as two properties of the log in order to make the whole file more easy to read and identify wanted logs. All the log prints shown before are the default prints that are printed with the default calling of the log function. However, if the user wants to print the log as a header, he has to specify the header in the log function, as following:
 
 ``` cpp
 // You can make typedefs to make your life easier
 typedef gabe::logging::opts::TextType TextType;
 typedef gabe::logging::Severity logSev;
 
-logger.write_log<TextType::HEADER>( logSev::INFO, "This is a Header." );
+logger.log<TextType::HEADER>( logSev::INFO, "This is a Header." );
 
 /* Output:
 [ info  ]                                                    [10:19:57]
@@ -237,14 +248,14 @@ logger.write_log<TextType::HEADER>( logSev::INFO, "This is a Header." );
 
 As can be seen, the header message log is surrounded by '*' characters, in order to be more easy to be identified, the text is centered, and there is an empty line printed before the header.
 
-Now lets check the same write_log but for a sub-header:
+Now lets check the same log but for a sub-header:
 
 ``` cpp
 // You can make typedefs to make your life easier
 typedef gabe::logging::opts::TextType TextType;
 typedef gabe::logging::Severity logSev;
 
-logger.write_log<TextType::HEADER>( logSev::INFO, "This is a Header." );
+logger.log<TextType::HEADER>( logSev::INFO, "This is a Header." );
 
 /* Output:
 [ info  ] ~~~           This is a Sub-Header.            ~~~ [10:22:41]

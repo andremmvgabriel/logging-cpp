@@ -227,7 +227,7 @@ namespace gabe
             void init();
 
             template <opts::TextType TT = opts::TextType::NORMAL>
-            void write_log(Severity severity, const std::string &message) {
+            void log(Severity severity, const std::string &message) {
                 // Only logs if the logger was initialized
                 if (_is_working) {
                     if (TT == opts::TextType::HEADER) { _write_header_log(severity, message); }
@@ -235,6 +235,36 @@ namespace gabe
                     else if (TT == opts::TextType::NORMAL) { _write_normal_log(severity, message); }
                     else { throw std::runtime_error("> Log text type was not recognized."); }
                 }
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void trace(const std::string &message) {
+                log<TT>(Severity::TRACE, message);
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void debug(const std::string &message) {
+                log<TT>(Severity::DEBUG, message);
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void info(const std::string &message) {
+                log<TT>(Severity::INFO, message);
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void warning(const std::string &message) {
+                log<TT>(Severity::WARNING, message);
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void error(const std::string &message) {
+                log<TT>(Severity::ERROR, message);
+            }
+
+            template <opts::TextType TT = opts::TextType::NORMAL>
+            void fatal(const std::string &message) {
+                log<TT>(Severity::FATAL, message);
             }
 
             void set_severity(const Severity& severity);

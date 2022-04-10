@@ -102,7 +102,7 @@ bool gabe::logging::Logger::_open_log_file() {
 
     // Opens the log file
     _log_file = std::ofstream (
-        _settings.logs_dir + _settings.file_name + std::to_string(++_files_counter) + ".txt", std::ios::out
+        _settings.logs_dir + _settings.file_name + std::to_string(++_files_counter) + ".txt", std::ios::out | std::ios::app
     );
 
     return !_log_file.fail();

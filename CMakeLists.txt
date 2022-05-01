@@ -14,8 +14,14 @@ set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
 INCLUDE_DIRECTORIES ( include )
 
 set( src_logging_lib
-    src/logging.cpp
+    src/gabe/logging/logging.cpp
+    src/gabe/logging/Manager.cpp
+    src/gabe/logging/LoggerHandler.cpp
+    src/gabe/logging/core/Logger.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
 
-add_subdirectory( examples )
+#add_subdirectory( examples )
+
+add_executable(NewAPI new_api_main.cpp)
+target_link_libraries(NewAPI logging fmt)

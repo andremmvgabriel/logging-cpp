@@ -2,6 +2,7 @@
 
 # Variables
 LOGGING_REPO_DIR=$PWD
+INPUT_ARGS=$@
 
 # Flags
 UPDATE="False"
@@ -34,6 +35,9 @@ build_and_install () {
     sudo cp "$LOGGING_REPO_DIR/lib/liblogging.a" "/usr/local/lib/liblogging.a"
     sudo cp "$LOGGING_REPO_DIR/include/logging.hpp" "/usr/local/include/logging.hpp"
 }
+
+# Requirements
+./requirements.sh $INPUT_ARGS
 
 # Checks if the library and header files exist in the user local folders
 if [ -f "/usr/local/lib/liblogging.a" ] && [ -f "/usr/local/include/logging.hpp" ]; then

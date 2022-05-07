@@ -11,16 +11,19 @@ namespace gabe {
     namespace logging {
         class Manager
         {
-        private:
+        public:
             std::unordered_map<std::string, core::Logger*> _loggers;
         
         public:
             Manager();
             ~Manager();
 
-            void log(const std::string &logger_name, const SeverityLevel &severity_level, const std::string &log_message);
+            void log(const std::string &logger_name, const SeverityLevel &severity, const std::string &message);
 
-            //LoggerHandler get_logger(const std::string &logger_name);
+            LoggerHandler get_logger(const std::string &logger_name);
+            void setup_logger(const std::string &name);
+
+            void print();
         };
     }
 }

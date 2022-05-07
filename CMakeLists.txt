@@ -15,13 +15,16 @@ INCLUDE_DIRECTORIES ( include )
 
 set( src_logging_lib
     src/gabe/logging/logging.cpp
+
     src/gabe/logging/Manager.cpp
     src/gabe/logging/LoggerHandler.cpp
+
     src/gabe/logging/core/Logger.cpp
+
+    src/gabe/logging/handlers/Handler.cpp
+    src/gabe/logging/handlers/TimeRotatingFileHandler.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
-
-#add_subdirectory( examples )
 
 add_executable(NewAPI new_api_main.cpp)
 target_link_libraries(NewAPI logging fmt)

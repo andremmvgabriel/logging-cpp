@@ -37,11 +37,24 @@ void gabe::logging::core::Logger::_delete_handlers() {
 
 void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
-    
+
+    // Formatters
+
+    // Handlers
+    // for (auto handler : _handlers) {
+    //     if (handler.second->evaluate()) {
+    //         _sink.flush(_log_file);
+    //         _close_log_file();
+    //         handler.second->handle();
+    //         _open_log_file();
+    //     }
+    // }
+
+    // Sink management
     if (_sink.should_flush(message))
         _sink.flush(_log_file);
     
-    _sink.sink_in(message);
+    _sink.sink_in(message + "\n");
 }
 
 void gabe::logging::core::Logger::trace(const std::string &message) {

@@ -24,6 +24,8 @@ namespace gabe {
                 bool _day_evaluation(const std::tm &time_calendar);
                 bool _week_evaluation(const std::tm &time_calendar);
                 bool _month_evaluation(const std::tm &time_calendar);
+
+                void _rotate_file(const std::string &old_name);
             
             public:
                 std::time_t _time_epoch;

@@ -13,6 +13,8 @@ void gabe::logging::core::Sink::sink_in(const std::string &message) {
     if (should_flush(message)) return;
 
     memcpy(&_buffer[_buffer_pos], message.data(), message.size());
+
+    _buffer_pos += message.size();
 }
 
 void gabe::logging::core::Sink::flush(std::ofstream &file) {

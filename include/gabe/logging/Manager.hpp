@@ -22,8 +22,6 @@ namespace gabe {
 
             LoggerHandler get_logger(const std::string &logger_name);
             void setup_logger(const std::string &name);
-
-            void print();
         };
     }
 }

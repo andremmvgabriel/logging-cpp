@@ -28,7 +28,3 @@ void gabe::logging::Manager::setup_logger(const std::string &logger_name) {
 
     _loggers[logger_name] = new core::Logger();
 }
-
-void gabe::logging::Manager::print() {
-    printf("Manager: L-%d\n", _loggers.size());
-}

@@ -1,5 +1,14 @@
 #include <gabe/logging/handlers/TimeRotatingFileHandler.hpp>
 
+#include <fmt/format.h>
+
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler() {}
+
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const gabe::logging::handlers::TimeRotatingFileHandler::Rotation &rotation) : _rotation(rotation) {
+    _time_epoch = std::time(nullptr);
+    localtime_r(&_time_epoch, &_time_calendar);
+}
+
 bool gabe::logging::handlers::TimeRotatingFileHandler::_minute_evaluation(const std::tm &time_calendar) {
     if (_time_calendar.tm_min != time_calendar.tm_min) return true;
     else return false;
@@ -25,6 +34,24 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::_month_evaluation(const s
     else return false;
 }
 
+void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(const std::string& old_name) {
+    std::size_t dot_pos = old_name.find(".");
+
+    std::string name(&old_name.data()[0], &old_name.data()[dot_pos]);
+    std::string extension(&old_name.data()[dot_pos]);
+
+    std::string year = fmt::format("{:04}", _time_calendar.tm_year + 1900);
+    std::string month = fmt::format("{:02}", _time_calendar.tm_mon + 1);
+    std::string day = fmt::format("{:02}", _time_calendar.tm_mday);
+
+    std::string hour = fmt::format("{:02}", _time_calendar.tm_hour);
+    std::string minutes = fmt::format("{:02}", _time_calendar.tm_min);
+
+    std::string new_name = name + "_" + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + "m" + extension;
+
+    rename(old_name.data(), new_name.data());
+}
+
 bool gabe::logging::handlers::TimeRotatingFileHandler::evaluate() {
     std::time_t time_epoch = std::time(nullptr);
     std::tm time_calendar;
@@ -41,5 +68,5 @@ void gabe::logging::handlers::TimeRotatingFileHandler::handle() {
     _time_epoch = std::time(nullptr);
     localtime_r(&_time_epoch, &_time_calendar);
 
-    //_rotate_file("logs/log_file.txt");
+    _rotate_file("logs/log_file.txt");
 }

@@ -20,6 +20,7 @@ set( src_logging_lib
     src/gabe/logging/LoggerHandler.cpp
 
     src/gabe/logging/core/Logger.cpp
+    src/gabe/logging/core/Sink.cpp
 
     src/gabe/logging/handlers/Handler.cpp
     src/gabe/logging/handlers/TimeRotatingFileHandler.cpp

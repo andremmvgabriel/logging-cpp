@@ -41,5 +41,5 @@ void gabe::logging::handlers::TimeRotatingFileHandler::handle() {
     _time_epoch = std::time(nullptr);
     localtime_r(&_time_epoch, &_time_calendar);
 
-    _rotate_file("logs/log_file.txt");
+    //_rotate_file("logs/log_file.txt");
 }

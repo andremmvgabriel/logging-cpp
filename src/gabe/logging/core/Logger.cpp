@@ -12,6 +12,7 @@ gabe::logging::core::Logger::~Logger() {
     _sink.flush(_log_file);
     _close_log_file();
     _delete_handlers();
+    _delete_formatters();
 }
 
 void gabe::logging::core::Logger::_open_log_file() {
@@ -35,10 +36,19 @@ void gabe::logging::core::Logger::_delete_handlers() {
     }
 }
 
-void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
+void gabe::logging::core::Logger::_delete_formatters() {
+    for (auto formatter : _formatters) {
+        delete formatter.second;
+    }
+}
+
+void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, std::string message) {
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
 
     // Formatters
+    for (const std::string &formatter_type : _formatters_order) {
+        _formatters[formatter_type]->format(message);
+    }
 
     // Handlers
     // for (auto handler : _handlers) {

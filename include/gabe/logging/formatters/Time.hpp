@@ -19,7 +19,6 @@ namespace gabe {
             
             protected:
                 Layout _layout = Layout::CLOCK_MS;
-                Formatter::Placement _placement = Formatter::Placement::BEGINNING;
 
                 std::unordered_map<Layout, std::string (Time::*) ()> _format_methods = {
                     {   Layout::CLOCK,      &Time::_clock       },
@@ -37,7 +36,6 @@ namespace gabe {
                 Time();
                 Time(const Formatter::Placement &placement, const Layout &layout = Layout::CLOCK_MS);
 
-                void set_placement(const Formatter::Placement &placement);
                 void set_layout(const Layout &layout);
 
                 virtual void format(std::string &message);

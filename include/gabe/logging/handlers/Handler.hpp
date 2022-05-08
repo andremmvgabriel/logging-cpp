@@ -11,6 +11,9 @@ namespace gabe {
                 std::string _type;
 
             public:
+                Handler();
+                Handler(const std::string &type);
+                
                 std::string type();
                 virtual bool evaluate();
                 virtual void handle();

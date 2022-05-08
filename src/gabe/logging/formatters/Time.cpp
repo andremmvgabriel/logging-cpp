@@ -4,8 +4,9 @@
 #include <chrono>
 #include <fmt/format.h>
 
-gabe::logging::formatters::Time::Time() {}
-gabe::logging::formatters::Time::Time(const Formatter::Placement &placement, const Layout &layout) : _placement(placement), _layout(layout) {}
+gabe::logging::formatters::Time::Time() : Formatter::Formatter("TimeFormatter") {}
+
+gabe::logging::formatters::Time::Time(const Formatter::Placement &placement, const Layout &layout) : Formatter::Formatter("TimeFormatter", placement), _layout(layout) {}
 
 std::string gabe::logging::formatters::Time::_clock() {
     using namespace std::chrono;
@@ -47,17 +48,13 @@ std::string gabe::logging::formatters::Time::_epoch_ms() {
     return fmt::format("[{:.3f}]", (double)msecs.count() / 1000.0);
 }
 
-void gabe::logging::formatters::Time::set_placement(const gabe::logging::formatters::Formatter::Placement &placement) {
-    _placement = placement;
-}
-
 void gabe::logging::formatters::Time::set_layout(const gabe::logging::formatters::Time::Layout &layout) {
     _layout = layout;
 }
 
 void gabe::logging::formatters::Time::format(std::string &message) {
-    if ((uint8_t)_placement > (uint8_t)Formatter::Placement::BEFORE_LOG)
-        message = fmt::format("{} {}", message, (*this.*_format_methods[_layout])());
-    else
+    if (_placement == Formatter::Placement::BEGINNING)
         message = fmt::format("{} {}", (*this.*_format_methods[_layout])(), message);
+    else
+        message = fmt::format("{} {}", message, (*this.*_format_methods[_layout])());
 }

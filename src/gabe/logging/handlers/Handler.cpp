@@ -1,5 +1,9 @@
 #include <gabe/logging/handlers/Handler.hpp>
 
+gabe::logging::handlers::Handler::Handler() : _type("DefaultHandler") {}
+
+gabe::logging::handlers::Handler::Handler(const std::string &type) : _type(type) {}
+
 std::string gabe::logging::handlers::Handler::type() {
     return _type;
 }

@@ -2,9 +2,9 @@
 
 #include <fmt/format.h>
 
-gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler() {}
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler() : Handler::Handler("TimeRotatingFile") {}
 
-gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const gabe::logging::handlers::TimeRotatingFileHandler::Rotation &rotation) : _rotation(rotation) {
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const gabe::logging::handlers::TimeRotatingFileHandler::Rotation &rotation) : Handler::Handler("TimeRotatingFile"), _rotation(rotation) {
     _time_epoch = std::time(nullptr);
     localtime_r(&_time_epoch, &_time_calendar);
 }

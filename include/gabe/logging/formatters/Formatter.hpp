@@ -9,13 +9,24 @@ namespace gabe {
             {
             public:
                 enum class Placement {
-                    BEGINNING   =   1,
-                    BEFORE_LOG  =   2,
-                    AFTER_LOG   =   4,
-                    END         =   8
+                    BEGINNING,
+                    END
                 };
             
+            protected:
+                std::string _type;
+                Formatter::Placement _placement = Formatter::Placement::BEGINNING;
+            
             public:
+                Formatter();
+                Formatter(const std::string &type);
+                Formatter(const std::string &type, const Formatter::Placement &placement);
+
+                std::string type() const;
+
+                void set_placement(const Formatter::Placement &placement);
+                Formatter::Placement get_placement() const;
+
                 virtual void format(std::string &message);
             };
         }

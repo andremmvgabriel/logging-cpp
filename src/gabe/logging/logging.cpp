@@ -35,5 +35,5 @@ void FATAL(const std::string &message) {
 */
 
 gabe::logging::LoggerHandler GET_LOGGER(const std::string &logger_name) {
-    manager.get_logger(logger_name);
+    return manager.get_logger(logger_name);
 }

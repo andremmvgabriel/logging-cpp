@@ -24,8 +24,15 @@ set( src_logging_lib
 
     src/gabe/logging/handlers/Handler.cpp
     src/gabe/logging/handlers/TimeRotatingFileHandler.cpp
+
+    src/gabe/logging/formatters/Formatter.cpp
+    src/gabe/logging/formatters/Calendar.cpp
+    src/gabe/logging/formatters/Time.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
+
+add_executable(Main main.cpp)
+target_link_libraries(Main logging fmt)
 
 add_executable(NewAPI new_api_main.cpp)
 target_link_libraries(NewAPI logging fmt)

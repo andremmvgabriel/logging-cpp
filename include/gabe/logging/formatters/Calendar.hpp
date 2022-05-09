@@ -13,17 +13,6 @@ namespace gabe {
             class Calendar : public Formatter
             {
             public:
-                // enum class Layout {
-                //     YEAR_MONTH_DAY,
-                //     YEAR_MONTH_DAY_WEEK,
-                //     MONTH_DAY,
-                //     MONTH_DAY_WEEK,
-                //     YEAR_DAY_MONTH,
-                //     YEAR_DAY_MONTH_WEEK,
-                //     DAY_MONTH,
-                //     DAY_MONTH_WEEK
-                // };
-
                 enum class Layout {
                     YEAR,
                     MONTH,

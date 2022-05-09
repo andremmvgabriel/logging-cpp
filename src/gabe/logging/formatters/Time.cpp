@@ -48,7 +48,7 @@ std::string gabe::logging::formatters::Time::_epoch_ms() {
     return fmt::format("[{:.3f}]", (double)msecs.count() / 1000.0);
 }
 
-void gabe::logging::formatters::Time::set_layout(const gabe::logging::formatters::Time::Layout &layout) {
+void gabe::logging::formatters::Time::set_layout(const Time::Layout &layout) {
     _layout = layout;
 }
 

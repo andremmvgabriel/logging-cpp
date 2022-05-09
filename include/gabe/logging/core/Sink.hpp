@@ -13,7 +13,7 @@ namespace gabe {
             {
             protected:
                 char *_buffer = nullptr;
-                uint32_t _buffer_size = 50;
+                uint32_t _buffer_size = 500000;
                 uint32_t _buffer_pos = 0;
             
             public:

@@ -57,11 +57,15 @@ namespace gabe {
                         delete _formatters[formatter.type()];
                     } else {
                         if (formatter.get_placement() == formatters::Formatter::Placement::BEGINNING) {
-                            _formatters_order.insert(_formatters_order.begin(), formatter.type());
-                        } else {
                             _formatters_order.push_back(formatter.type());
+                        } else {
+                            _formatters_order.insert(_formatters_order.begin(), formatter.type());
                         }
                     }
+
+                    for (auto type : _formatters_order) {
+                        printf("%s ", type.c_str());
+                    } printf("\n");
 
                     _formatters[formatter.type()] = dynamic_cast<formatters::Formatter*>(formatter_copy);
                 }

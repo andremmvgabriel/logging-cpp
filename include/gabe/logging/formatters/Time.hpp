@@ -31,14 +31,14 @@ namespace gabe {
                 std::string _clock_ms();
                 std::string _epoch();
                 std::string _epoch_ms();
+
+                virtual std::string _format();
             
             public:
-                Time();
-                Time(const Formatter::Placement &placement, const Layout &layout = Layout::CLOCK_MS);
+                //Time();
+                Time(const Layout &layout = Layout::CLOCK_MS);
 
                 void set_layout(const Layout &layout);
-
-                virtual void format(std::string &message);
             };
         }
     }

@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <vector>
+#include <mutex>
 #include <unordered_map>
 
 #include <gabe/logging/SeverityLevel.hpp>
@@ -25,7 +26,18 @@ namespace gabe {
 
                 std::unordered_map<std::string, formatters::Formatter*> _formatters;
 
-                std::vector<std::string> _formatters_order;
+                std::string _message_format = "[%sev] %msg";
+
+                std::mutex _log_mutex;
+
+                std::unordered_map<SeverityLevel, std::string> _formatting = {
+                    { SeverityLevel::TRACE,   "TRACE" },
+                    { SeverityLevel::DEBUG,   "DEBUG" },
+                    { SeverityLevel::INFO,    "INFO" },
+                    { SeverityLevel::WARNING, "WARNING" },
+                    { SeverityLevel::ERROR,   "ERROR" },
+                    { SeverityLevel::FATAL,   "FATAL" }
+                };
             
             protected:
                 void _open_log_file();
@@ -39,7 +51,7 @@ namespace gabe {
 
                 ~Logger();
 
-                void log(const SeverityLevel &severity, std::string message);
+                void log(const SeverityLevel &severity, const std::string &message);
 
                 void trace(const std::string &message);
                 void debug(const std::string &message);
@@ -55,17 +67,7 @@ namespace gabe {
 
                     if (_formatters.find(formatter.type()) != _formatters.end()) {
                         delete _formatters[formatter.type()];
-                    } else {
-                        if (formatter.get_placement() == formatters::Formatter::Placement::BEGINNING) {
-                            _formatters_order.push_back(formatter.type());
-                        } else {
-                            _formatters_order.insert(_formatters_order.begin(), formatter.type());
-                        }
                     }
-
-                    for (auto type : _formatters_order) {
-                        printf("%s ", type.c_str());
-                    } printf("\n");
 
                     _formatters[formatter.type()] = dynamic_cast<formatters::Formatter*>(formatter_copy);
                 }

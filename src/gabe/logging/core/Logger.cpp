@@ -42,12 +42,26 @@ void gabe::logging::core::Logger::_delete_formatters() {
     }
 }
 
-void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, std::string message) {
+void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
 
+    std::string final_log_message;
+    std::size_t message_pos = _message_format.find("%msg");
+    if (message_pos == -1) {
+        final_log_message = _message_format + message;
+    } else {
+        final_log_message = std::string(&_message_format[0], &_message_format[message_pos]) + message + std::string(&_message_format[message_pos+4]);
+    }
+
+    message_pos = _message_format.find("%sev");
+    if (message_pos != -1) {
+        final_log_message = std::string(&final_log_message[0], &final_log_message[message_pos]) + _formatting[severity] + std::string(&final_log_message[message_pos+4]);
+    }
+
     // Formatters
-    for (const std::string &formatter_type : _formatters_order) {
-        _formatters[formatter_type]->format(message);
+    for (auto formatter : _formatters) {
+        formatter.second->format(final_log_message);
+        printf("Formatted: %s\n", final_log_message.c_str());
     }
 
     // Handlers
@@ -61,10 +75,11 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
     // }
 
     // Sink management
-    if (_sink.should_flush(message))
+    if (_sink.should_flush(message)) {
         _sink.flush(_log_file);
+    }
     
-    _sink.sink_in(message + "\n");
+    _sink.sink_in(final_log_message + "\n");
 }
 
 void gabe::logging::core::Logger::trace(const std::string &message) {

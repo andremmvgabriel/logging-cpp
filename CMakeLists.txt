@@ -28,6 +28,7 @@ set( src_logging_lib
     src/gabe/logging/formatters/Formatter.cpp
     src/gabe/logging/formatters/Calendar.cpp
     src/gabe/logging/formatters/Time.cpp
+    src/gabe/logging/formatters/Severity.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
 
@@ -36,3 +37,7 @@ target_link_libraries(Main logging fmt)
 
 add_executable(NewAPI new_api_main.cpp)
 target_link_libraries(NewAPI logging fmt)
+
+
+
+add_subdirectory(tests)

@@ -2,20 +2,22 @@
 
 gabe::logging::formatters::Formatter::Formatter() : _type("DefaultFormatter") {}
 
-gabe::logging::formatters::Formatter::Formatter(const std::string &type) : _type(type) {}
+gabe::logging::formatters::Formatter::Formatter(const std::string &type, const std::string &key) : _type(type), _key(key) {}
 
-gabe::logging::formatters::Formatter::Formatter(const std::string &type, const gabe::logging::formatters::Formatter::Placement &placement) : _type(type), _placement(placement) {}
+std::string gabe::logging::formatters::Formatter::_format() {}
 
 std::string gabe::logging::formatters::Formatter::type() const {
     return _type;
 }
 
-void gabe::logging::formatters::Formatter::set_placement(const gabe::logging::formatters::Formatter::Placement &placement) {
-    _placement = placement;
+std::string gabe::logging::formatters::Formatter::key() const {
+    return _key;
 }
 
-gabe::logging::formatters::Formatter::Placement gabe::logging::formatters::Formatter::get_placement() const {
-    return _placement;
-}
+void gabe::logging::formatters::Formatter::format(std::string &message) {
+    std::size_t key_pos = message.find(_key);
 
-void gabe::logging::formatters::Formatter::format(std::string &message) {}
+    if (key_pos == -1) return;
+    
+    message = std::string(&message[0], &message[key_pos]) + _format() + std::string(&message[key_pos + _key.size()]);
+}

@@ -32,7 +32,6 @@ namespace gabe {
             
             protected:
                 std::vector<Layout> _layout = { Layout::YEAR, Layout::MONTH, Layout::DAY };
-                Formatter::Placement _placement = Formatter::Placement::BEGINNING;
 
                 std::unordered_map<Layout, std::string (Calendar::*) (const std::tm &)> _format_methods = {
                     {   Layout::YEAR,   &Calendar::_get_year    },
@@ -41,13 +40,14 @@ namespace gabe {
                     {   Layout::WEEK,   &Calendar::_get_weekday }
                 };
             
+            protected:
+                virtual std::string _format();
+            
             public:
-                Calendar();
-                Calendar(const Formatter::Placement &placement, const std::vector<Layout> &layout = { Layout::YEAR, Layout::MONTH, Layout::DAY } );
+                //Calendar();
+                Calendar(const std::vector<Layout> &layout = { Layout::YEAR, Layout::MONTH, Layout::DAY } );
 
                 void set_layout(const std::vector<Layout> &layout);
-
-                virtual void format(std::string &message);
             };
         }
     }

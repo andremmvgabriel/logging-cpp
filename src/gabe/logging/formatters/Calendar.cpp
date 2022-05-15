@@ -111,5 +111,5 @@ std::string gabe::logging::formatters::Calendar::_format() {
     _week.format(calendar_str);
     _sweek.format(calendar_str);
 
-    return fmt::format("{}", calendar_str);
+    return calendar_str;
 }

@@ -26,6 +26,7 @@ set( src_logging_lib
     src/gabe/logging/handlers/TimeRotatingFileHandler.cpp
 
     src/gabe/logging/formatters/Formatter.cpp
+    src/gabe/logging/formatters/MultiFormatter.cpp
     src/gabe/logging/formatters/Calendar.cpp
     src/gabe/logging/formatters/Time.cpp
     src/gabe/logging/formatters/Severity.cpp

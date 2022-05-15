@@ -4,7 +4,7 @@ gabe::logging::formatters::Formatter::Formatter() : _type("DefaultFormatter") {}
 
 gabe::logging::formatters::Formatter::Formatter(const std::string &type, const std::string &key) : _type(type), _key(key) {}
 
-std::string gabe::logging::formatters::Formatter::_format() {}
+std::string gabe::logging::formatters::Formatter::_format() { return ""; }
 
 std::string gabe::logging::formatters::Formatter::type() const {
     return _type;

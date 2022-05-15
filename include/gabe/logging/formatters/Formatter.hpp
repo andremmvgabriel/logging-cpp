@@ -10,6 +10,7 @@ namespace gabe {
             protected:
                 std::string _type;
                 std::string _key;
+                std::string _layout;
             
             protected:
                 virtual std::string _format();

@@ -93,7 +93,7 @@ namespace gabe {
             
             public:
                 Calendar();
-                Calendar(const std::string &calendar_format);
+                Calendar(const std::string &layout);
 
                 ~Calendar();
             };

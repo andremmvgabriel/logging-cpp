@@ -92,7 +92,7 @@ Calendar Formatter
 
 gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter", "%cal", "%year %smonth %day") {}
 
-gabe::logging::formatters::Calendar::Calendar(const std::string &calendar_format) : MultiFormatter("CalendarFormatter", "%cal", "%year %smonth %day") {}
+gabe::logging::formatters::Calendar::Calendar(const std::string &layout) : MultiFormatter("CalendarFormatter", "%cal", layout) {}
 
 gabe::logging::formatters::Calendar::~Calendar() {
     delete _calendar;
@@ -104,17 +104,12 @@ std::string gabe::logging::formatters::Calendar::_format() {
 
     std::string calendar_str = _layout;
 
-    printf("Reaching here\n");
-    printf("Initial string: %s\n", calendar_str.c_str());
-
     _year.format(calendar_str);
     _month.format(calendar_str);
     _smonth.format(calendar_str);
     _day.format(calendar_str);
     _week.format(calendar_str);
     _sweek.format(calendar_str);
-
-    printf("Final string: %s\n", calendar_str.c_str());
 
     return fmt::format("{}", calendar_str);
 }

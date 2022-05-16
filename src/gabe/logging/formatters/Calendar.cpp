@@ -22,8 +22,7 @@ std::string gabe::logging::formatters::Calendar::Year::_get_year() {
 
 std::string gabe::logging::formatters::Calendar::Year::_format() {
     if (!_calendar) return "";
-    if (_key == "%year") return _get_year();
-    return "";
+    return _get_year();
 }
 
 
@@ -59,8 +58,7 @@ std::string gabe::logging::formatters::Calendar::Day::_get_day() {
 
 std::string gabe::logging::formatters::Calendar::Day::_format() {
     if (!_calendar) return "";
-    if (_key == "%day") return _get_day();
-    return "";
+    return _get_day();
 }
 
 

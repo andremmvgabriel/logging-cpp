@@ -21,15 +21,50 @@ namespace gabe {
                     InternalFormatter(const std::string &type, const std::string &key, std::chrono::milliseconds *time_ms);
                 };
 
-                class Clock : public InternalFormatter
+                class Hours : public InternalFormatter
                 {
                 protected:
-                    std::string _get_clock();
-                    std::string _get_clock_ms();
+                    std::string _get_hours();
                 
                 public:
-                    Clock();
-                    Clock(const std::string &key, std::chrono::milliseconds *time_ms);
+                    Hours();
+                    Hours(const std::string &key, std::chrono::milliseconds *time_ms);
+
+                    virtual std::string _format() override;
+                };
+
+                class Minutes : public InternalFormatter
+                {
+                protected:
+                    std::string _get_minutes();
+                
+                public:
+                    Minutes();
+                    Minutes(const std::string &key, std::chrono::milliseconds *time_ms);
+
+                    virtual std::string _format() override;
+                };
+
+                class Seconds : public InternalFormatter
+                {
+                protected:
+                    std::string _get_seconds();
+                
+                public:
+                    Seconds();
+                    Seconds(const std::string &key, std::chrono::milliseconds *time_ms);
+
+                    virtual std::string _format() override;
+                };
+
+                class Milliseconds : public InternalFormatter
+                {
+                protected:
+                    std::string _get_milliseconds();
+                
+                public:
+                    Milliseconds();
+                    Milliseconds(const std::string &key, std::chrono::milliseconds *time_ms);
 
                     virtual std::string _format() override;
                 };
@@ -38,7 +73,6 @@ namespace gabe {
                 {
                 protected:
                     std::string _get_epoch();
-                    std::string _get_epoch_ms();
                 
                 public:
                     Epoch();
@@ -50,10 +84,11 @@ namespace gabe {
             protected:
                 std::chrono::milliseconds *_time_ms = new std::chrono::milliseconds();
 
-                Clock _clock = Clock("%clock", _time_ms);
-                Clock _clock_ms = Clock("%msclock", _time_ms);
+                Hours _hours = Hours("%hour", _time_ms);
+                Minutes _minutes = Minutes("%min", _time_ms);
+                Seconds _seconds = Seconds("%sec", _time_ms);
+                Milliseconds _milliseconds = Milliseconds("%ms", _time_ms);
                 Epoch _epoch = Epoch("%epoch", _time_ms);
-                Epoch _epoch_ms = Epoch("%msepoch", _time_ms);
 
             protected:
                 virtual std::string _format() override;

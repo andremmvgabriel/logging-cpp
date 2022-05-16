@@ -13,40 +13,86 @@ gabe::logging::formatters::Time::InternalFormatter::InternalFormatter(const std:
 
 
 
-gabe::logging::formatters::Time::Clock::Clock() : InternalFormatter("ClockFormatter", "%clock", nullptr) {}
+gabe::logging::formatters::Time::Hours::Hours() : InternalFormatter("HoursFormatter", "%hour", nullptr) {}
 
-gabe::logging::formatters::Time::Clock::Clock(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("ClockFormatter", key, time_ms) {}
+gabe::logging::formatters::Time::Hours::Hours(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("HoursFormatter", key, time_ms) {}
 
-std::string gabe::logging::formatters::Time::Clock::_get_clock() {
+std::string gabe::logging::formatters::Time::Hours::_get_hours() {
     std::time_t epoch = (double)_time_ms->count() / 1000.0;
 
     std::tm calendar;
     localtime_r(&epoch, &calendar);
 
-    return fmt::format("{:02}:{:02}:{:02}", calendar.tm_hour, calendar.tm_min, calendar.tm_sec);
+    return fmt::format("{:02}", calendar.tm_hour);
 }
 
-std::string gabe::logging::formatters::Time::Clock::_get_clock_ms() {
-    double seconds = (double)_time_ms->count() / 1000.0;
-    std::time_t epoch = seconds;
-    int decimals = (seconds - epoch) * 1000;
+std::string gabe::logging::formatters::Time::Hours::_format() {
+    if (!_time_ms) return "";
+    return _get_hours();
+}
+
+
+
+gabe::logging::formatters::Time::Minutes::Minutes() : InternalFormatter("MinutesFormatter", "%min", nullptr) {}
+
+gabe::logging::formatters::Time::Minutes::Minutes(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("MinutesFormatter", key, time_ms) {}
+
+std::string gabe::logging::formatters::Time::Minutes::_get_minutes() {
+    std::time_t epoch = (double)_time_ms->count() / 1000.0;
 
     std::tm calendar;
     localtime_r(&epoch, &calendar);
 
-    return fmt::format("{:02}:{:02}:{:02}.{:03}", calendar.tm_hour, calendar.tm_min, calendar.tm_sec, decimals);
+    return fmt::format("{:02}", calendar.tm_min);
 }
 
-std::string gabe::logging::formatters::Time::Clock::_format() {
+std::string gabe::logging::formatters::Time::Minutes::_format() {
     if (!_time_ms) return "";
-    if (_key == "%clock") return _get_clock();
-    else if (_key == "%msclock") return _get_clock_ms();
-    return "";
+    return _get_minutes();
 }
 
 
 
-gabe::logging::formatters::Time::Epoch::Epoch() : InternalFormatter("EpochFormatter", "", nullptr) {}
+gabe::logging::formatters::Time::Seconds::Seconds() : InternalFormatter("SecondsFormatter", "%sec", nullptr) {}
+
+gabe::logging::formatters::Time::Seconds::Seconds(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("SecondsFormatter", key, time_ms) {}
+
+std::string gabe::logging::formatters::Time::Seconds::_get_seconds() {
+    std::time_t epoch = (double)_time_ms->count() / 1000.0;
+
+    std::tm calendar;
+    localtime_r(&epoch, &calendar);
+
+    return fmt::format("{:02}", calendar.tm_sec);
+}
+
+std::string gabe::logging::formatters::Time::Seconds::_format() {
+    if (!_time_ms) return "";
+    return _get_seconds();
+}
+
+
+
+gabe::logging::formatters::Time::Milliseconds::Milliseconds() : InternalFormatter("MillisecondsFormatter", "%ms", nullptr) {}
+
+gabe::logging::formatters::Time::Milliseconds::Milliseconds(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("MillisecondsFormatter", key, time_ms) {}
+
+std::string gabe::logging::formatters::Time::Milliseconds::_get_milliseconds() {
+    double seconds = (double)_time_ms->count() / 1000.0;
+    std::time_t epoch = seconds;
+    int decimals = (seconds - epoch) * 1000;
+
+    return fmt::format("{:03}", decimals);
+}
+
+std::string gabe::logging::formatters::Time::Milliseconds::_format() {
+    if (!_time_ms) return "";
+    return _get_milliseconds();
+}
+
+
+
+gabe::logging::formatters::Time::Epoch::Epoch() : InternalFormatter("EpochFormatter", "%epoch", nullptr) {}
 
 gabe::logging::formatters::Time::Epoch::Epoch(const std::string &key, std::chrono::milliseconds *time_ms) : InternalFormatter("EpochFormatter", key, time_ms) {}
 
@@ -56,15 +102,9 @@ std::string gabe::logging::formatters::Time::Epoch::_get_epoch() {
     return fmt::format("{0:d}", seconds);
 }
 
-std::string gabe::logging::formatters::Time::Epoch::_get_epoch_ms() {
-    return fmt::format("{:.3f}", (double)_time_ms->count() / 1000.0);
-}
-
 std::string gabe::logging::formatters::Time::Epoch::_format() {
     if (!_time_ms) return "";
-    if (_key == "%epoch") return _get_epoch();
-    else if (_key == "%msepoch") return _get_epoch_ms();
-    return "";
+    return _get_epoch();
 }
 
 
@@ -73,7 +113,7 @@ std::string gabe::logging::formatters::Time::Epoch::_format() {
 Time Formatter
 */
 
-gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter", "%time", "%clock_ms") {}
+gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter", "%time", "%hour:%min:%sec.%ms") {}
 
 gabe::logging::formatters::Time::Time(const std::string &layout) : MultiFormatter("TimeFormatter", "%time", layout) {}
 
@@ -86,10 +126,11 @@ std::string gabe::logging::formatters::Time::_format() {
 
     std::string time_str = _layout;
 
-    _clock.format(time_str);
-    _clock_ms.format(time_str);
+    _hours.format(time_str);
+    _minutes.format(time_str);
+    _seconds.format(time_str);
+    _milliseconds.format(time_str);
     _epoch.format(time_str);
-    _epoch_ms.format(time_str);
 
     return time_str;
 }

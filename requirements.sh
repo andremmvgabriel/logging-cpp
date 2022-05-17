@@ -10,4 +10,9 @@ clone_and_install_fmt() {
     sudo apt install libfmt-dev
 }
 
+install_google_unit_testing_cpp() {
+    sudo apt install libgtest-dev
+}
+
 clone_and_install_fmt
+install_google_unit_testing_cpp

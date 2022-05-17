@@ -17,6 +17,46 @@ namespace gabe {
             class Logger
             {
             protected:
+                class Severity : public formatters::Formatter
+                {
+                protected:
+                    std::unordered_map<SeverityLevel, std::string> _formatting = {
+                        {   SeverityLevel::TRACE,   "TRACE"     },
+                        {   SeverityLevel::DEBUG,   "DEBUG"     },
+                        {   SeverityLevel::INFO,    "INFO"      },
+                        {   SeverityLevel::WARNING, "WARNING"   },
+                        {   SeverityLevel::ERROR,   "ERROR"     },
+                        {   SeverityLevel::FATAL,   "FATAL"     }
+                    };
+
+                    SeverityLevel _severity;
+                
+                protected:
+                    virtual std::string _format() override;
+
+                public:
+                    Severity();
+
+                    void set_severity(const SeverityLevel &severity);
+                };
+
+                class Message : public formatters::Formatter
+                {
+                protected:
+                    std::string _message;
+                
+                protected:
+                    virtual std::string _format() override;
+                
+                public:
+                    Message();
+
+                    void set_message(const std::string &message);
+
+                    virtual void format(std::string &message) override;
+                };
+
+            protected:
                 Sink _sink;
                 std::ofstream _log_file;
 
@@ -26,22 +66,14 @@ namespace gabe {
 
                 std::unordered_map<std::string, formatters::Formatter*> _formatters;
 
-                std::string _message_format = "[%sev] %msg";
+                std::string _log_layout = "[%sev] %msg";
 
                 std::mutex _log_mutex;
-
-                std::unordered_map<SeverityLevel, std::string> _formatting = {
-                    { SeverityLevel::TRACE,   "TRACE" },
-                    { SeverityLevel::DEBUG,   "DEBUG" },
-                    { SeverityLevel::INFO,    "INFO" },
-                    { SeverityLevel::WARNING, "WARNING" },
-                    { SeverityLevel::ERROR,   "ERROR" },
-                    { SeverityLevel::FATAL,   "FATAL" }
-                };
             
             protected:
                 void _open_log_file();
                 void _close_log_file();
+                void _setup_internal_formatters();
                 void _delete_handlers();
                 void _delete_formatters();
 
@@ -59,6 +91,8 @@ namespace gabe {
                 void warning(const std::string &message);
                 void error(const std::string &message);
                 void fatal(const std::string &message);
+
+                void set_log_layout(const std::string &log_layout);
 
                 template<typename FormatterT>
                 void add_formatter(const FormatterT &formatter) {

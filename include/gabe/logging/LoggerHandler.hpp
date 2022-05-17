@@ -26,6 +26,8 @@ namespace gabe {
             void error(const std::string &message);
             void fatal(const std::string &message);
 
+            void set_log_layout(const std::string &log_layout);
+
             template<typename FormatterT>
             void add_formatter(const FormatterT &formatter) {
                 _logger->add_formatter(formatter);

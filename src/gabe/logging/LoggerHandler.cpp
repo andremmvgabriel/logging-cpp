@@ -40,3 +40,7 @@ void gabe::logging::LoggerHandler::error(const std::string &message) {
 void gabe::logging::LoggerHandler::fatal(const std::string &message) {
     _logger->fatal(message);
 }
+
+void gabe::logging::LoggerHandler::set_log_layout(const std::string &log_layout) {
+    _logger->set_log_layout(log_layout);
+}

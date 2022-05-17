@@ -22,7 +22,7 @@ namespace gabe {
                 std::string type() const;
                 std::string key() const;
 
-                void format(std::string &message);
+                virtual void format(std::string &message);
             };
         }
     }

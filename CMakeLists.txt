@@ -29,7 +29,6 @@ set( src_logging_lib
     src/gabe/logging/formatters/MultiFormatter.cpp
     src/gabe/logging/formatters/Calendar.cpp
     src/gabe/logging/formatters/Time.cpp
-    src/gabe/logging/formatters/Severity.cpp
 )
 add_library( logging STATIC ${src_logging_lib} )
 

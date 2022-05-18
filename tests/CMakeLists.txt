@@ -21,4 +21,5 @@ include_directories(${GTEST_INCLUDE_DIRS})
 enable_testing()
 
 # Tests
+add_subdirectory(core)
 add_subdirectory(formatters)

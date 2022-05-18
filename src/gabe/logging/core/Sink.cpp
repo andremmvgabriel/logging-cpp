@@ -6,6 +6,7 @@ gabe::logging::core::Sink::Sink() {
 
 gabe::logging::core::Sink::~Sink() {
     if (_buffer) delete _buffer;
+    _buffer = nullptr;
 }
 
 void gabe::logging::core::Sink::sink_in(const std::string &message) {

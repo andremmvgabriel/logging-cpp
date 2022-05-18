@@ -8,8 +8,6 @@ class SinkMocker : public gabe::logging::core::Sink
 public:
     using Sink::_buffer;
     using Sink::_buffer_pos;
-
-    // ~SinkMocker() { ~Sink(); }
 };
 
 

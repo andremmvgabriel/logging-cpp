@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <fstream>
 
 #include <gabe/logging/core/Sink.hpp>
 
@@ -44,6 +45,19 @@ TEST(Core, SinkIn) {
     for (int i = 0; i < sink._buffer_pos; i++) {
         ASSERT_TRUE(sink._buffer[i] == message_to_sink[i]);
     }
+}
+
+TEST(Core, Flush) {
+    SinkMocker sink;
+
+    std::ofstream file ("test_sink_flush.txt", std::ios::out);
+    std::string message = "Message to sink! And then flush";
+
+    sink.sink_in(message);
+    sink.flush(file);
+
+    ASSERT_TRUE(file.tellp() == message.size());
+    ASSERT_TRUE(sink._buffer_pos == 0);
 }
 
 TEST(Core, DestroySink) {

@@ -94,11 +94,11 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
 
     std::string final_log_message = _log_layout;
 
+    // Formatters
     dynamic_cast<Severity*>(_formatters["SeverityFormatter"])->set_severity(severity);
 
     dynamic_cast<Message*>(_formatters["MessageFormatter"])->set_message(message);
 
-    // Formatters
     for (auto formatter : _formatters) {
         formatter.second->format(final_log_message);
     }

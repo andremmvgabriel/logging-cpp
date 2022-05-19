@@ -88,14 +88,13 @@ namespace gabe {
                 Week _week = Week("%week", _calendar);
                 Week _sweek = Week("%sweek", _calendar);
             
-            protected:
-                virtual std::string _format() override;
-            
             public:
                 Calendar();
                 Calendar(const std::string &layout);
 
                 ~Calendar();
+
+                virtual void format(std::string &message);
             };
         }
     }

@@ -121,16 +121,12 @@ gabe::logging::formatters::Time::~Time() {
     delete _time_ms;
 }
 
-std::string gabe::logging::formatters::Time::_format() {
+void gabe::logging::formatters::Time::format(std::string &message) {
     *_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 
-    std::string time_str = _layout;
-
-    _hours.format(time_str);
-    _minutes.format(time_str);
-    _seconds.format(time_str);
-    _milliseconds.format(time_str);
-    _epoch.format(time_str);
-
-    return time_str;
+    _hours.format(message);
+    _minutes.format(message);
+    _seconds.format(message);
+    _milliseconds.format(message);
+    _epoch.format(message);
 }

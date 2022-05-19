@@ -96,18 +96,14 @@ gabe::logging::formatters::Calendar::~Calendar() {
     delete _calendar;
 }
 
-std::string gabe::logging::formatters::Calendar::_format() {
+void gabe::logging::formatters::Calendar::format(std::string &message) {
     std::time_t epoch = std::time(nullptr);
     localtime_r(&epoch, _calendar);
 
-    std::string calendar_str = _layout;
-
-    _year.format(calendar_str);
-    _month.format(calendar_str);
-    _smonth.format(calendar_str);
-    _day.format(calendar_str);
-    _week.format(calendar_str);
-    _sweek.format(calendar_str);
-
-    return calendar_str;
+    _year.format(message);
+    _month.format(message);
+    _smonth.format(message);
+    _day.format(message);
+    _week.format(message);
+    _sweek.format(message);
 }

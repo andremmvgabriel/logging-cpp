@@ -89,15 +89,14 @@ namespace gabe {
                 Seconds _seconds = Seconds("%sec", _time_ms);
                 Milliseconds _milliseconds = Milliseconds("%ms", _time_ms);
                 Epoch _epoch = Epoch("%epoch", _time_ms);
-
-            protected:
-                virtual std::string _format() override;
             
             public:
                 Time();
                 Time(const std::string &layout);
 
                 ~Time();
+
+                virtual void format(std::string &message);
             };
         }
     }

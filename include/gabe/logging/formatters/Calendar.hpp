@@ -80,21 +80,12 @@ namespace gabe {
 
             protected:
                 std::tm *_calendar = new std::tm();
-
-                Year _year = Year("%year", _calendar);
-                Month _month = Month("%month", _calendar);
-                Month _smonth = Month("%smonth", _calendar);
-                Day _day = Day("%day", _calendar);
-                Week _week = Week("%week", _calendar);
-                Week _sweek = Week("%sweek", _calendar);
             
             public:
                 Calendar();
-                Calendar(const std::string &layout);
-
                 ~Calendar();
 
-                virtual void format(std::string &message);
+                virtual void format(std::string &message) override;
             };
         }
     }

@@ -113,9 +113,7 @@ std::string gabe::logging::formatters::Time::Epoch::_format() {
 Time Formatter
 */
 
-gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter", "%time", "%hour:%min:%sec.%ms") {}
-
-gabe::logging::formatters::Time::Time(const std::string &layout) : MultiFormatter("TimeFormatter", "%time", layout) {}
+gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter") {}
 
 gabe::logging::formatters::Time::~Time() {
     delete _time_ms;

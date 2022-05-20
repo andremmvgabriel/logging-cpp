@@ -88,9 +88,7 @@ std::string gabe::logging::formatters::Calendar::Week::_format() {
 Calendar Formatter
 */
 
-gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter", "%cal", "%year %smonth %day") {}
-
-gabe::logging::formatters::Calendar::Calendar(const std::string &layout) : MultiFormatter("CalendarFormatter", "%cal", layout) {}
+gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter") {}
 
 gabe::logging::formatters::Calendar::~Calendar() {
     delete _calendar;

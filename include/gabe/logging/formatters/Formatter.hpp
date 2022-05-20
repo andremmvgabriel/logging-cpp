@@ -10,13 +10,13 @@ namespace gabe {
             protected:
                 std::string _type;
                 std::string _key;
-                std::string _layout;
             
             protected:
                 virtual std::string _format();
             
             public:
                 Formatter();
+                Formatter(const std::string &type);
                 Formatter(const std::string &type, const std::string &key);
 
                 std::string type() const;

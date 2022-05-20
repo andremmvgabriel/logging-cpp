@@ -9,15 +9,9 @@ namespace gabe {
         namespace formatters {
             class MultiFormatter : public Formatter
             {
-            protected:
-                std::string _layout;
-            
             public:
                 MultiFormatter();
-                MultiFormatter(const std::string &type, const std::string &key);
-                MultiFormatter(const std::string &type, const std::string &key, const std::string &layout);
-
-                std::string layout() const;
+                MultiFormatter(const std::string &type);
             };
         }
     }

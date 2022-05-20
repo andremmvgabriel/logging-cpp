@@ -92,8 +92,6 @@ namespace gabe {
             
             public:
                 Time();
-                Time(const std::string &layout);
-
                 ~Time();
 
                 virtual void format(std::string &message);

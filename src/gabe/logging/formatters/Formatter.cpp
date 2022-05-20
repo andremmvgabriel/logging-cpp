@@ -1,6 +1,8 @@
 #include <gabe/logging/formatters/Formatter.hpp>
 
-gabe::logging::formatters::Formatter::Formatter() : _type("DefaultFormatter") {}
+gabe::logging::formatters::Formatter::Formatter() : _type("DefaultFormatter"), _key("") {}
+
+gabe::logging::formatters::Formatter::Formatter(const std::string &type) : _type(type), _key("") {}
 
 gabe::logging::formatters::Formatter::Formatter(const std::string &type, const std::string &key) : _type(type), _key(key) {}
 

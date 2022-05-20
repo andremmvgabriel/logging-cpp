@@ -113,18 +113,22 @@ std::string gabe::logging::formatters::Time::Epoch::_format() {
 Time Formatter
 */
 
-gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter") {}
+gabe::logging::formatters::Time::Time() : MultiFormatter("TimeFormatter") {
+    add_formatter( Hours("%hour", _time_ms) );
+    add_formatter( Minutes("%min", _time_ms) );
+    add_formatter( Seconds("%sec", _time_ms) );
+    add_formatter( Milliseconds("%ms", _time_ms) );
+    add_formatter( Epoch("%epoch", _time_ms) );
+}
 
 gabe::logging::formatters::Time::~Time() {
     delete _time_ms;
 }
 
 void gabe::logging::formatters::Time::format(std::string &message) {
-    *_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+    using namespace std::chrono;
 
-    _hours.format(message);
-    _minutes.format(message);
-    _seconds.format(message);
-    _milliseconds.format(message);
-    _epoch.format(message);
+    *_time_ms = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+
+    MultiFormatter::format(message);
 }

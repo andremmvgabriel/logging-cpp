@@ -88,7 +88,14 @@ std::string gabe::logging::formatters::Calendar::Week::_format() {
 Calendar Formatter
 */
 
-gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter") {}
+gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter") {
+    add_formatter( Year("%year", _calendar) );
+    add_formatter( Month("%month", _calendar) );
+    add_formatter( Month("%smonth", _calendar) );
+    add_formatter( Day("%day", _calendar) );
+    add_formatter( Week("%week", _calendar) );
+    add_formatter( Week("%sweek", _calendar) );
+}
 
 gabe::logging::formatters::Calendar::~Calendar() {
     delete _calendar;
@@ -98,10 +105,5 @@ void gabe::logging::formatters::Calendar::format(std::string &message) {
     std::time_t epoch = std::time(nullptr);
     localtime_r(&epoch, _calendar);
 
-    _year.format(message);
-    _month.format(message);
-    _smonth.format(message);
-    _day.format(message);
-    _week.format(message);
-    _sweek.format(message);
+    MultiFormatter::format(message);
 }

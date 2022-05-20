@@ -83,18 +83,12 @@ namespace gabe {
             
             protected:
                 std::chrono::milliseconds *_time_ms = new std::chrono::milliseconds();
-
-                Hours _hours = Hours("%hour", _time_ms);
-                Minutes _minutes = Minutes("%min", _time_ms);
-                Seconds _seconds = Seconds("%sec", _time_ms);
-                Milliseconds _milliseconds = Milliseconds("%ms", _time_ms);
-                Epoch _epoch = Epoch("%epoch", _time_ms);
             
             public:
                 Time();
                 ~Time();
 
-                virtual void format(std::string &message);
+                virtual void format(std::string &message) override;
             };
         }
     }

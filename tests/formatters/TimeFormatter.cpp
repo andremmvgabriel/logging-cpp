@@ -4,19 +4,97 @@
 #include <gabe/logging/formatters/Time.hpp>
 
 
-TEST(Basic, FormatWithKey) {
-    std::string initial_message = "[%time] Log message with key! Time should be displayed.";
+
+TEST(SingleKey, HourKey) {
+    std::string initial_message = "[%hour] Log message with hour key! Current hour should be displayed.";
     std::string format_message = initial_message;
 
     gabe::logging::formatters::Time time_format;
     time_format.format(format_message);
 
     ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 7 );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 3 );
 }
- 
-TEST(Basic, FormatWithoutKey) {
-    std::string initial_message = "[%cal] Log message without expected key... Time should be missing.";
+
+TEST(SingleKey, MinutesKey) {
+    std::string initial_message = "[%min] Log message with minutes key! Current minutes should be displayed.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 2 );
+}
+
+TEST(SingleKey, SecondsKey) {
+    std::string initial_message = "[%sec] Log message with seconds key! Current seconds should be displayed.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 2 );
+}
+
+TEST(SingleKey, MillisecondsKey) {
+    std::string initial_message = "[%ms] Log message with milliseconds key! Current milliseconds should be displayed.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() );
+}
+
+TEST(SingleKey, EpochKey) {
+    std::string initial_message = "[%epoch] Log message with epoch key! Time since epoch should be displayed.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() - 4 );
+}
+
+TEST(MultipleKeys, Layout_hour_min_sec) {
+    std::string initial_message = "[%hour:%min:%sec] Log message with hour, minutes, and seconds keys! Time should be displayed as hh:mm:ss.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 7 );
+}
+
+TEST(MultipleKeys, Layout_hour_min_sec_ms) {
+    std::string initial_message = "[%hour:%min:%sec.%ms] Log message with hour, minutes, seconds, and milliseconds keys! Time should be displayed as hh:mm:ss.ms.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 7 );
+}
+
+TEST(MultipleKeys, Layout_epoch_ms) {
+    std::string initial_message = "[%epoch.%ms] Log message with epoch and milliseconds keys! Time should be displayed as epoch.ms.";
+    std::string format_message = initial_message;
+
+    gabe::logging::formatters::Time time_format;
+    time_format.format(format_message);
+
+    ASSERT_TRUE( initial_message != format_message );
+    ASSERT_TRUE( initial_message.size() == format_message.size() - 4 );
+}
+
+TEST(Exceptions, NoKey) {
+    std::string initial_message = "[NoKey] Log message without any key... Time should be missing.";
     std::string format_message = initial_message;
 
     gabe::logging::formatters::Time time_format;
@@ -26,119 +104,18 @@ TEST(Basic, FormatWithoutKey) {
     ASSERT_TRUE( initial_message.size() == format_message.size() );
 }
 
-TEST(Basic, FormatWithMultipleKeys) {
-    std::string initial_message = "[%time] Log message with two keys... Time should appear in the first one [%time]";
+TEST(Exceptions, DuplicatedKeys) {
+    std::string initial_message = "[%hour %hour] Log message with two hour keys! The current hour should only be displayed in the first key";
     std::string format_message = initial_message;
 
     gabe::logging::formatters::Time time_format;
     time_format.format(format_message);
 
     ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 7 );
-
-    std::size_t key_pos = format_message.find("%time");
-
-    ASSERT_TRUE( key_pos != -1 );
+    ASSERT_TRUE( initial_message.size() == format_message.size() + 3 );
 }
 
-TEST(LayoutKeys, Hours) {
-    std::string initial_message = "[%time] This message should only present the two digit hours.";
-    std::string format_message = initial_message;
 
-    gabe::logging::formatters::Time calendar_format("%hour");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() + 3);
-}
-
-TEST(LayoutKeys, Minutes) {
-    std::string initial_message = "[%time] This message should only present the two digit minutes.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%min");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() + 3);
-}
-
-TEST(LayoutKeys, Seconds) {
-    std::string initial_message = "[%time] This message should only present the two digit seconds.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%sec");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() + 3);
-}
-
-TEST(LayoutKeys, Milliseconds) {
-    std::string initial_message = "[%time] This message should only present the three digits milliseconds.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%ms");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() + 2);
-}
-
-TEST(LayoutKeys, Epoch) {
-    std::string initial_message = "[%time] This message should only present the 10 digits epoch.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%epoch");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 5);
-}
-
-TEST(Layouts, Clock) {
-    std::string initial_message = "[%time] This message should present the clock as hh:mm:ss.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%hour:%min:%sec");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 3);
-}
-
-TEST(Layouts, ClockWithMilliseconds) {
-    std::string initial_message = "[%time] This message should present the clock as hh:mm:ss.ms.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%hour:%min:%sec.%ms");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 7);
-}
-
-TEST(Layouts, EpochWithMilliseconds) {
-    std::string initial_message = "[%time] This message should present the time as epoch.ms.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%epoch.%ms");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 9);
-}
-
-TEST(Layouts, LayoutWithDuplicatedKeys) {
-    std::string initial_message = "[%time] This message should only contain clock as hh:mm:ss, and the same layout without formatting.";
-    std::string format_message = initial_message;
-
-    gabe::logging::formatters::Time calendar_format("%hour:%min:%sec %hour:%min:%sec");
-    calendar_format.format(format_message);
-
-    ASSERT_TRUE( initial_message != format_message );
-    ASSERT_TRUE( initial_message.size() == format_message.size() - 19 );
-}
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);

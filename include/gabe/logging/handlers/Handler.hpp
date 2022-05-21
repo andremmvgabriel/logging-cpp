@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <gabe/logging/core/Sink.hpp>
+
 namespace gabe {
     namespace logging {
         namespace handlers {
@@ -14,9 +16,10 @@ namespace gabe {
                 Handler();
                 Handler(const std::string &type);
                 
-                std::string type();
+                std::string type() const;
+
                 virtual bool evaluate();
-                virtual void handle();
+                virtual void handle(core::Sink *sink, const std::string &message);
             };
         }
     }

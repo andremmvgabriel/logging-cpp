@@ -41,40 +41,30 @@ Logger
 */
 
 gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO) {
-    _open_log_file();
+    _sink = new Sink("log_file.txt");
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const gabe::logging::SeverityLevel &severity) : _severity(severity) {
-    _open_log_file();
+    _sink = new Sink("log_file.txt");
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::~Logger() {
-    _sink.flush(_log_file);
-    _close_log_file();
+    _delete_sink();
     _delete_handlers();
     _delete_formatters();
-}
-
-void gabe::logging::core::Logger::_open_log_file() {
-    if (_log_file.is_open()) return;
-
-    _log_file = std::ofstream(
-        "log_file.txt",
-        std::ios::out | std::ios::app
-    );
-}
-
-void gabe::logging::core::Logger::_close_log_file() {
-    if (!_log_file.is_open()) return;
-
-    _log_file.close();
 }
 
 void gabe::logging::core::Logger::_setup_internal_formatters() {
     add_formatter(Severity());
     add_formatter(Message());
+}
+
+void gabe::logging::core::Logger::_delete_sink() {
+    _sink->flush();
+    delete _sink;
+    _sink = nullptr;
 }
 
 void gabe::logging::core::Logger::_delete_handlers() {
@@ -103,7 +93,12 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
         formatter.second->format(final_log_message);
     }
 
+    final_log_message += "\n";
+
     // Handlers
+    for (auto handler : _handlers) {
+        handler.second->handle(_sink, final_log_message);
+    }
     // for (auto handler : _handlers) {
     //     if (handler.second->evaluate()) {
     //         _sink.flush(_log_file);
@@ -114,11 +109,11 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
     // }
 
     // Sink management
-    if (_sink.should_flush(message)) {
-        _sink.flush(_log_file);
+    if (_sink->should_flush(message)) {
+        _sink->flush();
     }
     
-    _sink.sink_in(final_log_message + "\n");
+    _sink->sink_in(final_log_message);
 }
 
 void gabe::logging::core::Logger::trace(const std::string &message) {

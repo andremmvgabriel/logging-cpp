@@ -57,8 +57,7 @@ namespace gabe {
                 };
 
             protected:
-                Sink _sink;
-                std::ofstream _log_file;
+                Sink *_sink = nullptr;
 
                 SeverityLevel _severity = SeverityLevel::INFO;
 
@@ -71,9 +70,8 @@ namespace gabe {
                 std::mutex _log_mutex;
             
             protected:
-                void _open_log_file();
-                void _close_log_file();
                 void _setup_internal_formatters();
+                void _delete_sink();
                 void _delete_handlers();
                 void _delete_formatters();
 

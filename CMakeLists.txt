@@ -23,7 +23,8 @@ set( src_logging_lib
     src/gabe/logging/core/Sink.cpp
 
     src/gabe/logging/handlers/Handler.cpp
-    src/gabe/logging/handlers/TimeRotatingFileHandler.cpp
+    src/gabe/logging/handlers/ConsoleStdOutHandler.cpp
+    # src/gabe/logging/handlers/TimeRotatingFileHandler.cpp
 
     src/gabe/logging/formatters/Formatter.cpp
     src/gabe/logging/formatters/MultiFormatter.cpp

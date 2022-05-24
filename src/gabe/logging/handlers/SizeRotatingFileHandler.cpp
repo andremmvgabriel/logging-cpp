@@ -57,19 +57,11 @@ std::vector<std::string> gabe::logging::handlers::SizeRotatingFileHandler::_find
 
     for (const auto &entry : std::filesystem::directory_iterator(directory)) {
         std::string file_name = entry.path();
-        printf("%s\n", file_name.c_str());
 
-        std::size_t position = file_name.find_last_of('/');
+        file_name = _find_and_get_after(file_name, "/", true);
 
-        if (position != -1) {
-            file_name = std::string(&file_name[position + 1]);
-        }
-
-        position = file_name.find(file_name);
-
-        if (position != -1) {
+        if (file_name.find(file_name) != -1)
             files.push_back(file_name);
-        }
     }
 
     return files;
@@ -77,43 +69,35 @@ std::vector<std::string> gabe::logging::handlers::SizeRotatingFileHandler::_find
 
 void gabe::logging::handlers::SizeRotatingFileHandler::_update_files_counter(const std::vector<std::string> &log_files) {
     for (std::string file : log_files) {
-        std::time_t position = file.find_last_of('.');
+        // Removes the extention from the filename
+        file = _find_and_get_before(file, ".", true);
 
-        if (position != -1) {
-            file = std::string(&file[0], &file[position]);
-        }
+        // Checks if the file has been handled before
+        if (file.find_last_of('.') == -1) continue;
 
-        position = file.find_last_of('.');
+        // Gets the formatted part by the handle 
+        file = _find_and_get_after(file, ".", true);
 
-        if (position == -1) continue;
+        // Checks if the formatter part is from another handler
+        if (file.find('-') != -1) continue;
 
-        file = std::string(&file[position + 1]);
-
-        position = file.find('-');
-
-        if (position != -1) continue;
-
+        // Gets the counter 
         int counter = std::stoi(file);
-        printf("%d\n", counter);
 
-        if (_files_counter < counter) {
-            _files_counter = counter;
-        }
+        // Updates the counter
+        if (_files_counter < counter) _files_counter = counter;
     }
 
+    // Increases the counter to start format new logging files
     _files_counter++;
-    printf("%d\n", _files_counter);
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::_rotate_file(core::Sink *sink) {
     std::string old_name = sink->file_name();
 
-    std::size_t dot_pos = old_name.find(".");
+    std::string new_name = _find_and_get_before(old_name, ".") + std::to_string(_files_counter++);
 
-    std::string name(&old_name.data()[0], &old_name.data()[dot_pos]);
-    std::string extension(&old_name.data()[dot_pos]);
-
-    std::string new_name = name + "." + std::to_string(_files_counter++) + extension;
+    if (old_name.find(".") != -1) new_name += _find_and_get_after(old_name, ".");
 
     rename(old_name.data(), new_name.data());
 }

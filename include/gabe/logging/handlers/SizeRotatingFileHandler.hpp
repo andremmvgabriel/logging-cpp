@@ -17,8 +17,8 @@ namespace gabe {
             
             protected:
                 std::vector<std::string> _find(std::string target, const std::string &key);
-                std::string _find_and_get_before(const std::string &target, const std::string &key, bool last = false)
-                std::string _find_and_get_after(const std::string &target, const std::string &key, bool last = false)
+                std::string _find_and_get_before(const std::string &target, const std::string &key, bool last = false);
+                std::string _find_and_get_after(const std::string &target, const std::string &key, bool last = false);
 
                 std::vector<std::string> _find_log_files(const std::string &directory, const std::string &file_name);
 

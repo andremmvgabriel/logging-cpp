@@ -4,10 +4,12 @@ gabe::logging::handlers::Handler::Handler() : _type("DefaultHandler") {}
 
 gabe::logging::handlers::Handler::Handler(const std::string &type) : _type(type) {}
 
+void gabe::logging::handlers::Handler::_evaluate() {}
+
 std::string gabe::logging::handlers::Handler::type() const {
     return _type;
 }
 
-bool gabe::logging::handlers::Handler::evaluate() { return false; }
+void gabe::logging::handlers::Handler::check_sink(core::Sink *sink) {}
 
 void gabe::logging::handlers::Handler::handle(core::Sink *sink, const std::string &message) {}

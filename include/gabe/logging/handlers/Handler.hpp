@@ -11,6 +11,9 @@ namespace gabe {
             {
             protected:
                 std::string _type;
+            
+            protected:
+                virtual void _evaluate();
 
             public:
                 Handler();
@@ -18,7 +21,7 @@ namespace gabe {
                 
                 std::string type() const;
 
-                virtual bool evaluate();
+                virtual void check_sink(core::Sink *sink);
                 virtual void handle(core::Sink *sink, const std::string &message);
             };
         }

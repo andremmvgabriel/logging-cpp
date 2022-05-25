@@ -41,12 +41,12 @@ Logger
 */
 
 gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO) {
-    _sink = new Sink("log_file.txt");
+    _sink = new Sink("logs", "log_file.txt");
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const gabe::logging::SeverityLevel &severity) : _severity(severity) {
-    _sink = new Sink("log_file.txt");
+    _sink = new Sink("logs", "log_file.txt");
     _setup_internal_formatters();
 }
 
@@ -99,14 +99,6 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
     for (auto handler : _handlers) {
         handler.second->handle(_sink, final_log_message);
     }
-    // for (auto handler : _handlers) {
-    //     if (handler.second->evaluate()) {
-    //         _sink.flush(_log_file);
-    //         _close_log_file();
-    //         handler.second->handle();
-    //         _open_log_file();
-    //     }
-    // }
 
     // Sink management
     if (_sink->should_flush(message)) {

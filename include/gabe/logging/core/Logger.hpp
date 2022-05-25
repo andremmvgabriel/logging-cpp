@@ -108,6 +108,8 @@ namespace gabe {
                 void add_handler(const HandlerT &handler) {
                     HandlerT* handler_copy = new HandlerT();
                     *handler_copy = handler;
+
+                    handler_copy->check_sink(_sink);
                     
                     if (_handlers.find(handler.type()) != _handlers.end()) {
                         delete _handlers[handler.type()];

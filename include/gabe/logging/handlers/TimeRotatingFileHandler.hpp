@@ -8,44 +8,44 @@ namespace gabe {
     namespace logging {
         namespace handlers {
             class TimeRotatingFileHandler : public Handler
-            {
-            public:
-                enum class Rotation {
-                    MINUTE  =   1,
-                    HOUR    =   2,
-                    DAY     =   4,
-                    WEEK    =   8,
-                    MONTH   =   16
-                };
-            
+            {            
             protected:
                 bool _minute_evaluation(const std::tm &time_calendar);
                 bool _hour_evaluation(const std::tm &time_calendar);
                 bool _day_evaluation(const std::tm &time_calendar);
                 bool _week_evaluation(const std::tm &time_calendar);
                 bool _month_evaluation(const std::tm &time_calendar);
-
-                void _rotate_file(const std::string &old_name);
             
             public:
                 std::time_t _time_epoch;
                 std::tm _time_calendar;
-                Rotation _rotation = Rotation::DAY;
+                std::string _rotation = "D";
 
-                std::unordered_map<Rotation, bool (TimeRotatingFileHandler::*) (const std::tm &)> _evaluation_methods = {
-                    {   Rotation::MINUTE,   &TimeRotatingFileHandler::_minute_evaluation   },
-                    {   Rotation::HOUR,     &TimeRotatingFileHandler::_hour_evaluation     },
-                    {   Rotation::DAY,      &TimeRotatingFileHandler::_day_evaluation      },
-                    {   Rotation::WEEK,     &TimeRotatingFileHandler::_week_evaluation     },
-                    {   Rotation::MONTH,    &TimeRotatingFileHandler::_month_evaluation    }
+                std::unordered_map<std::string, bool (TimeRotatingFileHandler::*) (const std::tm &)> _evaluation_methods = {
+                    {   "m",    &TimeRotatingFileHandler::_minute_evaluation   },
+                    {   "M",    &TimeRotatingFileHandler::_minute_evaluation   },
+                    {   "h",    &TimeRotatingFileHandler::_hour_evaluation     },
+                    {   "H",    &TimeRotatingFileHandler::_hour_evaluation     },
+                    {   "d",    &TimeRotatingFileHandler::_day_evaluation      },
+                    {   "D",    &TimeRotatingFileHandler::_day_evaluation      },
+                    {   "w",    &TimeRotatingFileHandler::_week_evaluation     },
+                    {   "W",    &TimeRotatingFileHandler::_week_evaluation     },
+                    {   "mth",  &TimeRotatingFileHandler::_month_evaluation    },
+                    {   "MTH",  &TimeRotatingFileHandler::_month_evaluation    }
                 };
+            
+            protected:
+                std::string _find_and_get_before(const std::string &target, const std::string &key, bool last = false);
+                std::string _find_and_get_after(const std::string &target, const std::string &key, bool last = false);
+
+                void _rotate_file(core::Sink *sink);
             
             public:
                 TimeRotatingFileHandler();
-                TimeRotatingFileHandler(const Rotation &rotation);
+                TimeRotatingFileHandler(const std::string &rotation);
 
-                virtual bool evaluate() override;
-                virtual void handle() override;
+                virtual void check_sink(core::Sink *sink) override;
+                virtual void handle(core::Sink *sink, const std::string &message) override;
             };
         }
     }

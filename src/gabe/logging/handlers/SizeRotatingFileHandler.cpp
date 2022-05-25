@@ -6,20 +6,6 @@ gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler() : _s
 
 gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler(uint64_t size) : _size(size) {}
 
-// void gabe::logging::handlers::SizeRotatingFileHandler::_evaluate() {
-//     // #include <string>
-//     // #include <iostream>
-//     // #include <filesystem>
-//     // namespace fs = std::filesystem;
-
-//     // int main()
-//     // {
-//     //     std::string path = "/path/to/directory";
-//     //     for (const auto & entry : fs::directory_iterator(path))
-//     //         std::cout << entry.path() << std::endl;
-//     // }
-// }
-
 std::vector<std::string> gabe::logging::handlers::SizeRotatingFileHandler::_find(std::string target, const std::string &key) {
     std::vector<std::string> parts;
 
@@ -93,17 +79,15 @@ void gabe::logging::handlers::SizeRotatingFileHandler::_update_files_counter(con
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::string old_name = sink->file_name();
+    std::string new_name = sink->file_directory() + "/" + _find_and_get_before(sink->file_name(), ".") + std::to_string(_files_counter++);
 
-    std::string new_name = _find_and_get_before(old_name, ".") + std::to_string(_files_counter++);
+    if (sink->file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->file_name(), ".");
 
-    if (old_name.find(".") != -1) new_name += _find_and_get_after(old_name, ".");
-
-    rename(old_name.data(), new_name.data());
+    rename(sink->file_full_path().data(), new_name.data());
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::check_sink(core::Sink *sink) {
-    std::vector<std::string> log_files = _find_log_files(sink->file_path(), sink->file_name());
+    std::vector<std::string> log_files = _find_log_files(sink->file_directory(), sink->file_name());
 
     _update_files_counter(log_files);
 }

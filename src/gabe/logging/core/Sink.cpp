@@ -2,7 +2,7 @@
 
 gabe::logging::core::Sink::Sink() {}
 
-gabe::logging::core::Sink::Sink(const std::string &file_path) : _file_name(file_path) {
+gabe::logging::core::Sink::Sink(const std::string &file_directory, const std::string &file_name) : _file_directory(file_directory), _file_name(file_name) {
     open_file();
     _buffer = new char[_buffer_size];
 }
@@ -17,7 +17,7 @@ void gabe::logging::core::Sink::open_file() {
     if (_file.is_open()) return;
 
     _file = std::ofstream(
-        _file_name,
+        file_full_path(),
         std::ios::out | std::ios::app
     );
 }
@@ -63,6 +63,10 @@ std::string gabe::logging::core::Sink::file_name() {
     return _file_name;
 }
 
-std::string gabe::logging::core::Sink::file_path() {
-    return _file_path;
+std::string gabe::logging::core::Sink::file_directory() {
+    return _file_directory;
+}
+
+std::string gabe::logging::core::Sink::file_full_path() {
+    return (_file_directory + "/" + _file_name);
 }

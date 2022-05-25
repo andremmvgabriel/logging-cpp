@@ -1,6 +1,10 @@
 #include <gabe/logging/core/Sink.hpp>
 
-gabe::logging::core::Sink::Sink() {}
+#include <filesystem>
+
+gabe::logging::core::Sink::Sink() {
+    _file_directory = std::string(std::filesystem::current_path()) + "/logs";
+}
 
 gabe::logging::core::Sink::Sink(const std::string &file_directory, const std::string &file_name) : _file_directory(file_directory), _file_name(file_name) {
     open_file();

@@ -14,7 +14,7 @@ namespace gabe {
             protected:
                 std::ofstream _file;
                 std::string _file_name;
-                std::string _file_directory = "/home/gabe/Projects/Logger/logs";
+                std::string _file_directory;
 
                 char *_buffer = nullptr;
                 uint32_t _buffer_size = 500000;

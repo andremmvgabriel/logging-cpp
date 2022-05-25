@@ -11,9 +11,6 @@ namespace gabe {
             {
             protected:
                 std::string _type;
-            
-            protected:
-                virtual void _evaluate();
 
             public:
                 Handler();

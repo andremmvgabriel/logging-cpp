@@ -10,9 +10,9 @@
 #define stat _stat
 #endif
 
-gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler() : Handler::Handler("TimeRotatingFile"), _rotation("D") {}
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler() : Handler("TimeRotatingFile"), _rotation("D") {}
 
-gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const std::string &rotation) : Handler::Handler("TimeRotatingFile"), _rotation(rotation) {
+gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const std::string &rotation) : Handler("TimeRotatingFile"), _rotation(rotation) {
     _time_epoch = std::time(nullptr);
     localtime_r(&_time_epoch, &_time_calendar);
 }

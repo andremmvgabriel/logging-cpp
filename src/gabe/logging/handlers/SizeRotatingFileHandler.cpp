@@ -2,9 +2,9 @@
 
 #include <filesystem>
 
-gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler() : _size(5000000) {}
+gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler() : Handler("SizeRotatingFileHandler"), _size(5000000) {}
 
-gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler(uint64_t size) : _size(size) {}
+gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler(uint64_t size) : Handler("SizeRotatingFileHandler"), _size(size) {}
 
 std::vector<std::string> gabe::logging::handlers::SizeRotatingFileHandler::_find(std::string target, const std::string &key) {
     std::vector<std::string> parts;

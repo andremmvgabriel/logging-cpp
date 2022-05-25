@@ -1,8 +1,8 @@
 #include <gabe/logging/formatters/MultiFormatter.hpp>
 
-gabe::logging::formatters::MultiFormatter::MultiFormatter() : Formatter() {}
+gabe::logging::formatters::MultiFormatter::MultiFormatter() : Formatter("MultiFormatter") {}
 
-gabe::logging::formatters::MultiFormatter::MultiFormatter(const std::string &type) : Formatter(type, "") {}
+gabe::logging::formatters::MultiFormatter::MultiFormatter(const std::string &type) : Formatter(type) {}
 
 gabe::logging::formatters::MultiFormatter::~MultiFormatter() {
     for (auto formatter : _formatters) {

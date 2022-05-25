@@ -70,13 +70,16 @@ TEST(Core, SinkIn) {
 TEST(Core, Flush) {
     SinkMocker sink;
 
-    std::string message = "Message to sink! And then flush";
+    std::string message = "Message to sink! And then flush.";
 
     sink.sink_in(message);
     sink.flush();
 
     ASSERT_TRUE(sink.file_size() == message.size());
     ASSERT_TRUE(sink.buffer_size() == 0);
+
+    // Deletes the file
+    std::remove(sink.file_full_path().c_str());
 }
 
 // TEST(Core, DestroySink) {

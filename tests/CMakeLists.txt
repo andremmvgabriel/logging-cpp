@@ -23,4 +23,4 @@ enable_testing()
 # Tests
 add_subdirectory(core)
 add_subdirectory(formatters)
-# add_subdirectory(handlers)
+add_subdirectory(handlers)

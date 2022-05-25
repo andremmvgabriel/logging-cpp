@@ -1,0 +1,2 @@
+add_unit_test(Handler)
+add_unit_test(ConsoleStdOutHandler)

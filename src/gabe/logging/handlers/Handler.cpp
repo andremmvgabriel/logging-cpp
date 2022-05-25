@@ -4,8 +4,6 @@ gabe::logging::handlers::Handler::Handler() : _type("DefaultHandler") {}
 
 gabe::logging::handlers::Handler::Handler(const std::string &type) : _type(type) {}
 
-void gabe::logging::handlers::Handler::_evaluate() {}
-
 std::string gabe::logging::handlers::Handler::type() const {
     return _type;
 }

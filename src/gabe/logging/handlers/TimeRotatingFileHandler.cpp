@@ -59,7 +59,7 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::_month_evaluation(const s
 }
 
 void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::string name = _find_and_get_before(sink->file_name(), ".", true);
+    std::string name = _find_and_get_before(sink->get_file_name(), ".", true);
 
     std::string year = fmt::format("{:04}", _time_calendar.tm_year + 1900);
     std::string month = fmt::format("{:02}", _time_calendar.tm_mon + 1);
@@ -68,11 +68,11 @@ void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *
     std::string hour = fmt::format("{:02}", _time_calendar.tm_hour);
     std::string minutes = fmt::format("{:02}", _time_calendar.tm_min);
 
-    std::string new_name = sink->file_directory() + "/" + name + "_" + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + "m";
+    std::string new_name = sink->get_file_directory() + "/" + name + "_" + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + "m";
 
-    if (sink->file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->file_name(), ".", true);
+    if (sink->get_file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->get_file_name(), ".", true);
 
-    rename(sink->file_full_path().data(), new_name.data());
+    rename(sink->get_file_full_path().data(), new_name.data());
 
     // Updates the time
     _time_epoch = std::time(nullptr);
@@ -82,7 +82,7 @@ void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *
 void gabe::logging::handlers::TimeRotatingFileHandler::check_sink(core::Sink *sink) {
     struct stat result;
 
-    if(stat(sink->file_full_path().c_str(), &result)==0)
+    if(stat(sink->get_file_full_path().c_str(), &result)==0)
         _time_epoch = result.st_mtime;
         localtime_r(&_time_epoch, &_time_calendar);
 

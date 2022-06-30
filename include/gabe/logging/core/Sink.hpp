@@ -36,9 +36,13 @@ namespace gabe {
                 uint32_t buffer_size();
                 uint32_t buffer_max_size();
 
-                std::string file_name();
-                std::string file_directory();
-                std::string file_full_path();
+                void set_file_name(const std::string &name);
+                std::string get_file_name();
+
+                void set_file_directory(const std::string &directory);
+                std::string get_file_directory();
+
+                std::string get_file_full_path();
             };
         }
     }

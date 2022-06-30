@@ -79,15 +79,15 @@ void gabe::logging::handlers::SizeRotatingFileHandler::_update_files_counter(con
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::string new_name = sink->file_directory() + "/" + _find_and_get_before(sink->file_name(), ".") + std::to_string(_files_counter++);
+    std::string new_name = sink->get_file_directory() + "/" + _find_and_get_before(sink->get_file_name(), ".") + std::to_string(_files_counter++);
 
-    if (sink->file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->file_name(), ".");
+    if (sink->get_file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->get_file_name(), ".");
 
-    rename(sink->file_full_path().data(), new_name.data());
+    rename(sink->get_file_full_path().data(), new_name.data());
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::check_sink(core::Sink *sink) {
-    std::vector<std::string> log_files = _find_log_files(sink->file_directory(), sink->file_name());
+    std::vector<std::string> log_files = _find_log_files(sink->get_file_directory(), sink->get_file_name());
 
     _update_files_counter(log_files);
 }

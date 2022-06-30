@@ -2,15 +2,11 @@
 
 #include <filesystem>
 
-gabe::logging::core::Sink::Sink() {
-    _file_name = "log.txt";
-    _file_directory = std::string(std::filesystem::current_path());
-    open_file();
+gabe::logging::core::Sink::Sink() : _file_directory(""), _file_name("log.txt") {
     _buffer = new char[_buffer_size];
 }
 
 gabe::logging::core::Sink::Sink(const std::string &file_directory, const std::string &file_name) : _file_directory(file_directory), _file_name(file_name) {
-    open_file();
     _buffer = new char[_buffer_size];
 }
 
@@ -24,7 +20,7 @@ void gabe::logging::core::Sink::open_file() {
     if (_file.is_open()) return;
 
     _file = std::ofstream(
-        file_full_path(),
+        get_file_full_path(),
         std::ios::out | std::ios::app
     );
 }
@@ -45,6 +41,7 @@ void gabe::logging::core::Sink::sink_in(const std::string &message) {
 }
 
 void gabe::logging::core::Sink::flush() {
+    open_file();
     _file.write(_buffer, _buffer_pos);
     _buffer_pos = 0;
 }
@@ -66,14 +63,22 @@ uint32_t gabe::logging::core::Sink::buffer_max_size() {
     return _buffer_size;
 }
 
-std::string gabe::logging::core::Sink::file_name() {
+void gabe::logging::core::Sink::set_file_name(const std::string &name) {
+    _file_name = name;
+}
+
+std::string gabe::logging::core::Sink::get_file_name() {
     return _file_name;
 }
 
-std::string gabe::logging::core::Sink::file_directory() {
+void gabe::logging::core::Sink::set_file_directory(const std::string &directory) {
+    _file_directory = directory;
+}
+
+std::string gabe::logging::core::Sink::get_file_directory() {
     return _file_directory;
 }
 
-std::string gabe::logging::core::Sink::file_full_path() {
+std::string gabe::logging::core::Sink::get_file_full_path() {
     return (_file_directory + "/" + _file_name);
 }

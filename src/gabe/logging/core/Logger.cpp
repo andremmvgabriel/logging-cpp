@@ -40,13 +40,23 @@ void gabe::logging::core::Logger::Message::format(std::string &message) {
 Logger
 */
 
-gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO) {
+gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO), _parent(nullptr) {
     _sink = new Sink("logs", "log.txt");
     _setup_internal_formatters();
 }
 
-gabe::logging::core::Logger::Logger(const gabe::logging::SeverityLevel &severity) : _severity(severity) {
-    _sink = new Sink("logs", "log.txt");
+gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, Logger* parent) : _severity(SeverityLevel::INFO), _parent(parent) {
+    _sink = new Sink(location, name + ".txt");
+    _setup_internal_formatters();
+}
+
+gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity) : _severity(severity), _parent(nullptr) {
+    _sink = new Sink(location, name + ".txt");
+    _setup_internal_formatters();
+}
+
+gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity, Logger *parent) : _severity(severity), _parent(parent) {
+    _sink = new Sink(location, name + ".txt");
     _setup_internal_formatters();
 }
 
@@ -54,6 +64,7 @@ gabe::logging::core::Logger::~Logger() {
     _delete_sink();
     _delete_handlers();
     _delete_formatters();
+    _parent = nullptr;
 }
 
 void gabe::logging::core::Logger::_setup_internal_formatters() {
@@ -80,6 +91,8 @@ void gabe::logging::core::Logger::_delete_formatters() {
 }
 
 void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
+    _log_mutex.lock();
+
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
 
     std::string final_log_message = _log_layout;
@@ -106,6 +119,11 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
     }
     
     _sink->sink_in(final_log_message);
+
+    // Also logs into parent if existent, and allowed
+    if (_parent && _chained_logs) _parent->log(severity, message);
+
+    _log_mutex.unlock();
 }
 
 void gabe::logging::core::Logger::trace(const std::string &message) {
@@ -134,4 +152,46 @@ void gabe::logging::core::Logger::fatal(const std::string &message) {
 
 void gabe::logging::core::Logger::set_log_layout(const std::string &log_layout) {
     _log_layout = log_layout;
+}
+
+std::string gabe::logging::core::Logger::get_log_layout() {
+    return _log_layout;
+}
+
+void gabe::logging::core::Logger::set_chained_logs(bool active) {
+    _chained_logs = active;
+}
+
+bool gabe::logging::core::Logger::get_chained_logs() {
+    return _chained_logs;
+}
+
+void gabe::logging::core::Logger::set_severity(const SeverityLevel &severity) {
+    _severity = severity;
+}
+
+gabe::logging::SeverityLevel gabe::logging::core::Logger::get_severity() {
+    return _severity;
+}
+
+void gabe::logging::core::Logger::set_logs_location(const std::string &location) {
+    _sink->set_file_directory(location);
+}
+
+std::string gabe::logging::core::Logger::get_logs_location() {
+    return _sink->get_file_directory();
+}
+
+void gabe::logging::core::Logger::set_logs_file_name(const std::string &file_name) {
+    _sink->set_file_name(file_name + ".txt");
+}
+
+std::string gabe::logging::core::Logger::get_logs_file_name() {
+    return _sink->get_file_name();
+}
+
+void gabe::logging::core::Logger::basic_config(const SeverityLevel &severity, const std::string &location, const std::string &file_name) {
+    set_severity(severity);
+    set_logs_location(location);
+    set_logs_file_name(file_name);
 }

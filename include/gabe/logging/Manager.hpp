@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
@@ -13,15 +14,25 @@ namespace gabe {
         {
         public:
             std::unordered_map<std::string, core::Logger*> _loggers;
+            std::string _logs_directory;
+            bool _chained_logs;
+
+            std::mutex _manager_mutex;
+        
+        protected:
+            std::string _find_parent_logger_name(const std::string &logger_name);
         
         public:
             Manager();
             ~Manager();
 
+            void set_logs_directory(const std::string &path);
+            void set_chained_logs(bool active);
+
             void log(const std::string &logger_name, const SeverityLevel &severity, const std::string &message);
 
             LoggerHandler get_logger(const std::string &logger_name);
-            void setup_logger(const std::string &name);
+            void setup_logger(const std::string &name, core::Logger* parent = nullptr);
         };
     }
 }

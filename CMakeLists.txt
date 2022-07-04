@@ -43,3 +43,4 @@ target_link_libraries(NewAPI logging fmt)
 
 
 add_subdirectory(tests)
+add_subdirectory(examples)

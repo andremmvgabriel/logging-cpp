@@ -91,7 +91,7 @@ void gabe::logging::core::Logger::_delete_formatters() {
 }
 
 void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
-    _log_mutex.lock();
+    std::lock_guard<std::mutex> lock_guard(_log_mutex);
 
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
 
@@ -122,8 +122,6 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
 
     // Also logs into parent if existent, and allowed
     if (_parent && _chained_logs) _parent->log(severity, message);
-
-    _log_mutex.unlock();
 }
 
 void gabe::logging::core::Logger::trace(const std::string &message) {

@@ -2,8 +2,16 @@
 
 static gabe::logging::Manager manager = gabe::logging::Manager();
 
-void SET_LOGS_DIRECTORY(const std::string &path) {
-    manager.set_logs_directory(path);
+void SET_DEFAULT_CHAINED_LOGS(bool allow_chained) {
+    manager.set_default_chained_logs(allow_chained);
+}
+
+void SET_DEFAULT_SEVERITY(const gabe::logging::SeverityLevel &severity) {
+    manager.set_default_severity(severity);
+}
+
+void SET_DEFAULT_LOGS_DIRECTORY(const std::string &path) {
+    manager.set_default_logs_directory(path);
 }
 
 void LOG(const gabe::logging::SeverityLevel &severity, const std::string &message) {

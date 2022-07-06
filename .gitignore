@@ -38,7 +38,5 @@ logs/*
 bin/*
 lib/*
 docs/*
-examples/build/*
-examples/logs/*
-examples/bin/*
-examples/lib/*
+examples/logs
+examples/*.example

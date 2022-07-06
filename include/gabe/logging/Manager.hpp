@@ -14,10 +14,13 @@ namespace gabe {
         {
         public:
             std::unordered_map<std::string, core::Logger*> _loggers;
-            std::string _logs_directory;
-            bool _chained_logs;
 
             std::mutex _manager_mutex;
+
+            // Default settings
+            bool _default_chained_logs;
+            SeverityLevel _default_severity;
+            std::string _default_logs_directory;
         
         protected:
             std::string _find_parent_logger_name(const std::string &logger_name);
@@ -26,8 +29,9 @@ namespace gabe {
             Manager();
             ~Manager();
 
-            void set_logs_directory(const std::string &path);
-            void set_chained_logs(bool active);
+            void set_default_chained_logs(bool allow_chained);
+            void set_default_severity(const SeverityLevel &severity);
+            void set_default_logs_directory(const std::string &path);
 
             void log(const std::string &logger_name, const SeverityLevel &severity, const std::string &message);
 

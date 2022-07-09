@@ -1,7 +1,7 @@
 #include <gabe/logging/Manager.hpp>
 #include <filesystem>
 
-gabe::logging::Manager::Manager() : _default_chained_logs(true) {
+gabe::logging::Manager::Manager() : _default_logger("main"), _default_chained_logs(true), _default_severity(SeverityLevel::INFO) {
     set_default_logs_directory(std::string(std::filesystem::current_path()));
 }
 

@@ -14,6 +14,9 @@ endfunction()
 add_example( simple_logging )
 list ( APPEND examples_bins simple_logging.example )
 
+add_example( logging_handler )
+list ( APPEND examples_bins logging_handler.example )
+
 # Creates a target flag for the example executables
 add_custom_target ( examples
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/logs # Creates the logs directory if the target is specified on build

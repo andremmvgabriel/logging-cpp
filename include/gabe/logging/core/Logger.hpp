@@ -5,6 +5,8 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <fmt/format.h>
+
 #include <gabe/logging/SeverityLevel.hpp>
 #include <gabe/logging/handlers/Handler.hpp>
 #include <gabe/logging/formatters/Formatter.hpp>
@@ -78,6 +80,8 @@ namespace gabe {
                 void _delete_handlers();
                 void _delete_formatters();
 
+                void _log(const SeverityLevel &severity, const std::string &message);
+
             public:
                 Logger();
                 Logger(const std::string &location, const std::string &name, Logger *parent);
@@ -86,14 +90,41 @@ namespace gabe {
 
                 ~Logger();
 
-                void log(const SeverityLevel &severity, const std::string &message);
+                template<typename ... Args>
+                void log(const SeverityLevel &severity, const std::string &message, Args... args) {
+                    std::string formatted_message = fmt::format(message, args...);
+                    _log(severity, formatted_message);
+                }
 
-                void trace(const std::string &message);
-                void debug(const std::string &message);
-                void info(const std::string &message);
-                void warning(const std::string &message);
-                void error(const std::string &message);
-                void fatal(const std::string &message);
+                template<typename ... Args>
+                void trace(const std::string &message, Args... args) {
+                    log(SeverityLevel::TRACE, message, args...);
+                }
+
+                template<typename ... Args>
+                void debug(const std::string &message, Args... args) {
+                    log(SeverityLevel::DEBUG, message, args...);
+                }
+
+                template<typename ... Args>
+                void info(const std::string &message, Args... args) {
+                    log(SeverityLevel::INFO, message, args...);
+                }
+
+                template<typename ... Args>
+                void warning(const std::string &message, Args... args) {
+                    log(SeverityLevel::WARNING, message, args...);
+                }
+
+                template<typename ... Args>
+                void error(const std::string &message, Args... args) {
+                    log(SeverityLevel::ERROR, message, args...);
+                }
+
+                template<typename ... Args>
+                void fatal(const std::string &message, Args... args) {
+                    log(SeverityLevel::FATAL, message, args...);
+                }
 
                 void set_log_layout(const std::string &log_layout);
                 std::string get_log_layout();

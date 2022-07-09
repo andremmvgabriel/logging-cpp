@@ -55,6 +55,7 @@ int main() {
         This example should cover how to use the logging handler object.
 
     Notes:
+        This example only presents results with a single logger handler, but you can use as many as you want.
     */
 
     // Gets the logger with "logging_handler_example" name. (It creates it since it does not exist yet)

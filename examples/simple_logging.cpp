@@ -1,6 +1,13 @@
 #include <gabe/logging/logging.hpp>
 
+// Typedefs just to agile the accessibility  of methods
 typedef gabe::logging::SeverityLevel SevLvl;
+
+void add_values_and_log(int val1, int val2) {
+    int result = val1 + val2;
+    LOG(SevLvl::DEBUG, "My addition: {} + {} = {}", val1, val2, result);
+    LOG(SevLvl::DEBUG, "{:^20s} {:^4d} + {:^4d} = {:^4d}", "My addition:", val1, val2, result);
+}
 
 int main() {
     /*
@@ -32,6 +39,8 @@ int main() {
     WARNING("Testing WARNING from WARNING function.");
     ERROR("Testing ERROR from ERROR function.");
     FATAL("Testing FATAL from FATAL function.");
+
+    add_values_and_log(10, 40);
     
     return 0;
 }

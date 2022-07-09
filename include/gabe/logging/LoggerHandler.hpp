@@ -19,14 +19,40 @@ namespace gabe {
 
             core::Logger* ptr();
 
-            void log(const gabe::logging::SeverityLevel &severity, const std::string &message);
+            template<typename ... Args>
+            void log(const gabe::logging::SeverityLevel &severity, const std::string &message, Args... args) {
+                _logger->log(severity, message, args...);
+            }
 
-            void trace(const std::string &message);
-            void debug(const std::string &message);
-            void info(const std::string &message);
-            void warning(const std::string &message);
-            void error(const std::string &message);
-            void fatal(const std::string &message);
+            template<typename ... Args>
+            void trace(const std::string &message, Args... args) {
+                _logger->trace(message, args...);
+            }
+
+            template<typename ... Args>
+            void debug(const std::string &message, Args... args) {
+                _logger->debug(message, args...);
+            }
+
+            template<typename ... Args>
+            void info(const std::string &message, Args... args) {
+                _logger->info(message, args...);
+            }
+
+            template<typename ... Args>
+            void warning(const std::string &message, Args... args) {
+                _logger->warning(message, args...);
+            }
+
+            template<typename ... Args>
+            void error(const std::string &message, Args... args) {
+                _logger->error(message, args...);
+            }
+
+            template<typename ... Args>
+            void fatal(const std::string &message, Args... args) {
+                _logger->fatal(message, args...);
+            }
 
             void set_log_layout(const std::string &log_layout);
             std::string get_log_layout();

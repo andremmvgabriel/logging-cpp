@@ -1,7 +1,5 @@
 #include <gabe/logging/core/Logger.hpp>
 
-#include <fmt/format.h>
-
 /*
 Internal Formatters
 */
@@ -90,7 +88,7 @@ void gabe::logging::core::Logger::_delete_formatters() {
     }
 }
 
-void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severity, const std::string &message) {
+void gabe::logging::core::Logger::_log(const SeverityLevel &severity, const std::string &message) {
     std::lock_guard<std::mutex> lock_guard(_log_mutex);
 
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
@@ -122,30 +120,6 @@ void gabe::logging::core::Logger::log(const gabe::logging::SeverityLevel &severi
 
     // Also logs into parent if existent, and allowed
     if (_parent && _chained_logs) _parent->log(severity, message);
-}
-
-void gabe::logging::core::Logger::trace(const std::string &message) {
-    log(SeverityLevel::TRACE, message);
-}
-
-void gabe::logging::core::Logger::debug(const std::string &message) {
-    log(SeverityLevel::DEBUG, message);
-}
-
-void gabe::logging::core::Logger::info(const std::string &message) {
-    log(SeverityLevel::INFO, message);
-}
-
-void gabe::logging::core::Logger::warning(const std::string &message) {
-    log(SeverityLevel::WARNING, message);
-}
-
-void gabe::logging::core::Logger::error(const std::string &message) {
-    log(SeverityLevel::ERROR, message);
-}
-
-void gabe::logging::core::Logger::fatal(const std::string &message) {
-    log(SeverityLevel::FATAL, message);
 }
 
 void gabe::logging::core::Logger::set_log_layout(const std::string &log_layout) {

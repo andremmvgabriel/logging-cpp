@@ -11,6 +11,10 @@ gabe::logging::Manager::~Manager() {
     }
 }
 
+void gabe::logging::Manager::set_default_logger(const std::string &logger_name) {
+    _default_logger = logger_name;
+}
+
 void gabe::logging::Manager::set_default_chained_logs(bool allow_chained) {
     _default_chained_logs = allow_chained;
 }
@@ -21,11 +25,6 @@ void gabe::logging::Manager::set_default_severity(const SeverityLevel &severity)
 
 void gabe::logging::Manager::set_default_logs_directory(const std::string &path) {
     _default_logs_directory = path;
-}
-
-void gabe::logging::Manager::log(const std::string &logger_name, const SeverityLevel &severity, const std::string &message) {
-    LoggerHandler logger = get_logger(logger_name);
-    logger.log(severity, message);
 }
 
 std::string gabe::logging::Manager::_find_parent_logger_name(const std::string &logger_name) {

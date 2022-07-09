@@ -34,12 +34,6 @@ set( src_logging_lib
 )
 add_library( logging STATIC ${src_logging_lib} )
 
-add_executable(Main main.cpp)
-target_link_libraries(Main logging fmt)
-
-add_executable(NewAPI new_api_main.cpp)
-target_link_libraries(NewAPI logging fmt)
-
 
 
 add_subdirectory(tests)

@@ -6,7 +6,7 @@ gabe::logging::Manager* _get_internal_manager() {
     return &manager;
 }
 
-void SER_DEFAULT_LOGGER(const std::string &logger_name) {
+void SET_DEFAULT_LOGGER(const std::string &logger_name) {
     manager.set_default_logger(logger_name);
 }
 

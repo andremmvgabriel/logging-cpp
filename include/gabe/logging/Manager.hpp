@@ -41,12 +41,6 @@ namespace gabe {
                 logger.log(severity, message, args...);
             }
 
-            template<typename ... Args>
-            void log(const std::string &logger_name, const SeverityLevel &severity, const std::string &message, Args... args) {
-                LoggerHandler logger = get_logger(logger_name);
-                logger.log(severity, message, args...);
-            }
-
             LoggerHandler get_logger(const std::string &logger_name);
             void setup_logger(const std::string &name, core::Logger* parent = nullptr);
         };

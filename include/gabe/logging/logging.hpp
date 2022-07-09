@@ -21,21 +21,9 @@ void LOG(const gabe::logging::SeverityLevel &severity, const std::string &messag
 }
 
 template<typename ... Args>
-void LOG(const std::string &logger_name, const gabe::logging::SeverityLevel &severity, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, severity, message, args...);
-}
-
-template<typename ... Args>
 void TRACE(const std::string &message, Args... args) {
     gabe::logging::Manager* manager = _get_internal_manager();
     manager->log(gabe::logging::SeverityLevel::TRACE, message, args...);
-}
-
-template<typename ... Args>
-void TRACE(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::TRACE, message, args...);
 }
 
 template<typename ... Args>
@@ -45,21 +33,9 @@ void DEBUG(const std::string &message, Args... args) {
 }
 
 template<typename ... Args>
-void DEBUG(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::DEBUG, message, args...);
-}
-
-template<typename ... Args>
 void INFO(const std::string &message, Args... args) {
     gabe::logging::Manager* manager = _get_internal_manager();
     manager->log(gabe::logging::SeverityLevel::INFO, message, args...);
-}
-
-template<typename ... Args>
-void INFO(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::INFO, message, args...);
 }
 
 template<typename ... Args>
@@ -69,31 +45,13 @@ void WARNING(const std::string &message, Args... args) {
 }
 
 template<typename ... Args>
-void WARNING(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::WARNING, message, args...);
-}
-
-template<typename ... Args>
 void ERROR(const std::string &message, Args... args) {
     gabe::logging::Manager* manager = _get_internal_manager();
     manager->log(gabe::logging::SeverityLevel::ERROR, message, args...);
 }
 
 template<typename ... Args>
-void ERROR(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::ERROR, message, args...);
-}
-
-template<typename ... Args>
 void FATAL(const std::string &message, Args... args) {
     gabe::logging::Manager* manager = _get_internal_manager();
     manager->log(gabe::logging::SeverityLevel::FATAL, message, args...);
-}
-
-template<typename ... Args>
-void FATAL(const std::string &logger_name, const std::string &message, Args... args) {
-    gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(logger_name, gabe::logging::SeverityLevel::FATAL, message, args...);
 }

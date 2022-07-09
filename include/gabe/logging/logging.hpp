@@ -41,7 +41,7 @@ void TRACE(const std::string &logger_name, const std::string &message, Args... a
 template<typename ... Args>
 void DEBUG(const std::string &message, Args... args) {
     gabe::logging::Manager* manager = _get_internal_manager();
-    manager->log(gabe::logging::SeverityLevel::TRACE, message, args...);
+    manager->log(gabe::logging::SeverityLevel::DEBUG, message, args...);
 }
 
 template<typename ... Args>

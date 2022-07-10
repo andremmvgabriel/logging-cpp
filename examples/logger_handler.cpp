@@ -59,7 +59,7 @@ int main() {
     */
 
     // Gets the logger with "logging_handler_example" name. (It creates it since it does not exist yet)
-    LogHdl logger = GET_LOGGER("logging_handler_example");
+    LogHdl logger = GET_LOGGER("logger_handler_example");
 
     // Quick logger configuration (just to change the default values)
     logger.basic_config(

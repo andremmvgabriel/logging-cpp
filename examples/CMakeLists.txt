@@ -14,8 +14,8 @@ endfunction()
 add_example( simple_logging )
 list ( APPEND examples_bins simple_logging.example )
 
-add_example( logging_handler )
-list ( APPEND examples_bins logging_handler.example )
+add_example( logger_handler )
+list ( APPEND examples_bins logger_handler.example )
 
 add_example( chained_logging )
 list ( APPEND examples_bins chained_logging.example )

@@ -35,6 +35,18 @@ namespace gabe {
             void set_default_severity(const SeverityLevel &severity);
             void set_default_logs_directory(const std::string &path);
 
+            template<typename FormatterT>
+            void add_formatter(const FormatterT &formatter) {
+                LoggerHandler logger = get_logger(_default_logger);
+                logger.add_formatter(formatter);
+            }
+
+            template<typename HandlerT>
+            void add_handler(const HandlerT &handler) {
+                LoggerHandler logger = get_logger(_default_logger);
+                logger.add_handler(handler);
+            }
+
             template<typename ... Args>
             void log(const SeverityLevel &severity, const std::string &message, Args... args) {
                 LoggerHandler logger = get_logger(_default_logger);

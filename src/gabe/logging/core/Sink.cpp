@@ -4,10 +4,18 @@
 
 gabe::logging::core::Sink::Sink() : _file_directory(""), _file_name("log.txt") {
     _buffer = new char[_buffer_size];
+
+    if (std::filesystem::exists(get_file_full_path())) {
+        open_file();
+    }
 }
 
 gabe::logging::core::Sink::Sink(const std::string &file_directory, const std::string &file_name) : _file_directory(file_directory), _file_name(file_name) {
     _buffer = new char[_buffer_size];
+
+    if (std::filesystem::exists(get_file_full_path())) {
+        open_file();
+    }
 }
 
 gabe::logging::core::Sink::~Sink() {
@@ -52,7 +60,10 @@ bool gabe::logging::core::Sink::should_flush(const std::string &message) {
 }
 
 uint32_t gabe::logging::core::Sink::file_size() {
-    return _file.tellp();
+    if (_file.is_open())
+        return _file.tellp();
+    else
+        return 0;
 }
 
 uint32_t gabe::logging::core::Sink::buffer_size() {

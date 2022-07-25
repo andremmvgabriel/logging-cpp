@@ -147,7 +147,11 @@ gabe::logging::SeverityLevel gabe::logging::core::Logger::get_severity() {
 }
 
 void gabe::logging::core::Logger::set_logs_location(const std::string &location) {
+    std::lock_guard<std::mutex> lock_guard(_log_mutex);
     _sink->set_file_directory(location);
+    for (auto handler : _handlers) {
+        handler.second->check_sink(_sink);
+    }
 }
 
 std::string gabe::logging::core::Logger::get_logs_location() {
@@ -155,7 +159,11 @@ std::string gabe::logging::core::Logger::get_logs_location() {
 }
 
 void gabe::logging::core::Logger::set_logs_file_name(const std::string &file_name) {
+    std::lock_guard<std::mutex> lock_guard(_log_mutex);
     _sink->set_file_name(file_name + ".txt");
+    for (auto handler : _handlers) {
+        handler.second->check_sink(_sink);
+    }
 }
 
 std::string gabe::logging::core::Logger::get_logs_file_name() {

@@ -72,7 +72,6 @@ namespace gabe {
                 bool _chained_logs = true;
 
                 std::mutex _log_mutex;
-                // std::lock_guard<std::mutex> _log_guard;
             
             protected:
                 void _setup_internal_formatters();

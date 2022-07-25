@@ -11,6 +11,7 @@ void SET_DEFAULT_LOGGER(const std::string &logger_name);
 void SET_DEFAULT_CHAINED_LOGS(bool allow_chained);
 void SET_DEFAULT_SEVERITY(const gabe::logging::SeverityLevel &severity);
 void SET_DEFAULT_LOGS_DIRECTORY(const std::string &path);
+void SET_LOG_LAYOUT(const std::string &log_layout);
 
 gabe::logging::LoggerHandler GET_LOGGER(const std::string &logger_name);
 

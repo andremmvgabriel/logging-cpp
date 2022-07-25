@@ -100,7 +100,7 @@ void gabe::logging::core::Sink::set_file_directory(const std::string &directory)
 }
 
 std::string gabe::logging::core::Sink::get_file_directory() {
-    return _file_directory;
+    return std::filesystem::absolute(_file_directory);
 }
 
 std::string gabe::logging::core::Sink::get_file_full_path() {

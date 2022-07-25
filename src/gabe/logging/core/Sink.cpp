@@ -104,5 +104,5 @@ std::string gabe::logging::core::Sink::get_file_directory() {
 }
 
 std::string gabe::logging::core::Sink::get_file_full_path() {
-    return (_file_directory + "/" + _file_name);
+    return std::filesystem::absolute(_file_directory) / _file_name;
 }

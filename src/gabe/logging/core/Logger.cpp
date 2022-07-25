@@ -39,7 +39,7 @@ Logger
 */
 
 gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO), _parent(nullptr) {
-    _sink = new Sink("logs", "log.txt");
+    _sink = new Sink("", "log.txt");
     _setup_internal_formatters();
 }
 

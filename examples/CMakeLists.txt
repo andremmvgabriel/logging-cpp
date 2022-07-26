@@ -23,6 +23,9 @@ list ( APPEND examples_bins chained_logging.example )
 add_example( logging_with_formatters )
 list ( APPEND examples_bins logging_with_formatters.example )
 
+add_example( logging_with_handlers )
+list ( APPEND examples_bins logging_with_handlers.example )
+
 # Creates a target flag for the example executables
 add_custom_target ( examples
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/logs # Creates the logs directory if the target is specified on build

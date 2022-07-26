@@ -32,6 +32,8 @@ namespace gabe {
                 void flush();
                 bool should_flush(const std::string &message);
 
+                void rotate_file(const std::string &new_name);
+
                 uint32_t file_size();
                 uint32_t buffer_size();
                 uint32_t buffer_max_size();

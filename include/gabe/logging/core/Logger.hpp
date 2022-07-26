@@ -83,6 +83,8 @@ namespace gabe {
 
                 void _log(const SeverityLevel &severity, const std::string &message);
 
+                void _process_handlers(const std::string &message);
+
             public:
                 Logger();
                 Logger(const std::string &location, const std::string &name, Logger *parent);

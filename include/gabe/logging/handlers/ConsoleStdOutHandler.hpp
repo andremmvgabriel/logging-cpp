@@ -11,7 +11,7 @@ namespace gabe {
             public:
                 ConsoleStdOutHandler();
 
-                virtual void handle(core::Sink *sink, const std::string &message) override;
+                virtual bool evaluate(core::Sink *sink, const std::string &message) override;
             };
         }
     }

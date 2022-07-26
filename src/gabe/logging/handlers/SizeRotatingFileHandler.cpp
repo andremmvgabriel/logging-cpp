@@ -55,28 +55,24 @@ void gabe::logging::handlers::SizeRotatingFileHandler::_update_files_counter(con
     _files_counter = ++files_counter;
 }
 
-void gabe::logging::handlers::SizeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::filesystem::path file_path(sink->get_file_directory());
-    std::filesystem::path file_name(sink->get_file_name());
-
-    // Creates the new name
-    std::string new_name = std::string(file_path / file_name.stem()) + "." + fmt::format("{:06d}", _files_counter++) + std::string(file_name.extension());
-
-    std::rename(sink->get_file_full_path().c_str(), new_name.c_str());
-}
-
 void gabe::logging::handlers::SizeRotatingFileHandler::check_sink(core::Sink *sink) {
     std::vector<std::string> log_files = _find_log_files(sink->get_file_directory(), sink->get_file_name());
 
     _update_files_counter(log_files);
 }
 
-void gabe::logging::handlers::SizeRotatingFileHandler::handle(core::Sink *sink, const std::string &message) {
+bool gabe::logging::handlers::SizeRotatingFileHandler::evaluate(core::Sink *sink, const std::string &message) {
     uint64_t total_size = sink->file_size() + sink->buffer_size();
 
-    if (total_size >= _size) {
-        sink->flush();
-        sink->close_file();
-        _rotate_file(sink);
-    }
+    if (total_size >= _size)
+        return true;
+    
+    return false;
+}
+
+std::string gabe::logging::handlers::SizeRotatingFileHandler::create_handled_file_name(const std::string &file_name) {
+    std::filesystem::path name(file_name);
+
+    // Creates the new name
+    return std::string(name.stem()) + "." + fmt::format("{:06d}", _files_counter++) + std::string(name.extension());
 }

@@ -19,7 +19,8 @@ namespace gabe {
                 std::string type() const;
 
                 virtual void check_sink(core::Sink *sink);
-                virtual void handle(core::Sink *sink, const std::string &message);
+                virtual bool evaluate(core::Sink *sink, const std::string &message);
+                virtual std::string create_handled_file_name(const std::string &file_name);
             };
         }
     }

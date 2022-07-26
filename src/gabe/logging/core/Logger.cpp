@@ -121,9 +121,7 @@ void gabe::logging::core::Logger::_log(const SeverityLevel &severity, const std:
     final_log_message += "\n";
 
     // Handlers
-    for (auto handler : _handlers) {
-        handler.second->handle(_sink, final_log_message);
-    }
+    _process_handlers(final_log_message);
 
     // Sink management
     if (_sink->should_flush(message)) {
@@ -134,6 +132,27 @@ void gabe::logging::core::Logger::_log(const SeverityLevel &severity, const std:
 
     // Also logs into parent if existent, and allowed
     if (_parent && _chained_logs) _parent->log(severity, message);
+}
+
+void gabe::logging::core::Logger::_process_handlers(const std::string &message) {
+    // Control variable to know if any handler was triggered
+    bool needs_rotation = false;
+
+    // Caches the current file name
+    std::string file_name = _sink->get_file_name();
+
+    // Checks all the handlers
+    for (auto handler : _handlers) {
+        if (handler.second->evaluate(_sink, message)) {
+            file_name = handler.second->create_handled_file_name(file_name);
+            needs_rotation = true;
+        }
+    }
+
+    // Rotates the file if needed
+    if (needs_rotation) {
+        _sink->rotate_file(file_name);
+    }
 }
 
 void gabe::logging::core::Logger::set_log_layout(const std::string &log_layout) {

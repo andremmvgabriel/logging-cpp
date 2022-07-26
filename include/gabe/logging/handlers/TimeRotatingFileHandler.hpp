@@ -37,15 +37,14 @@ namespace gabe {
             protected:
                 std::string _find_and_get_before(const std::string &target, const std::string &key, bool last = false);
                 std::string _find_and_get_after(const std::string &target, const std::string &key, bool last = false);
-
-                void _rotate_file(core::Sink *sink);
             
             public:
                 TimeRotatingFileHandler();
                 TimeRotatingFileHandler(const std::string &rotation);
 
                 virtual void check_sink(core::Sink *sink) override;
-                virtual void handle(core::Sink *sink, const std::string &message) override;
+                virtual bool evaluate(core::Sink *sink, const std::string &message) override;
+                virtual std::string create_handled_file_name(const std::string &file_name) override;
             };
         }
     }

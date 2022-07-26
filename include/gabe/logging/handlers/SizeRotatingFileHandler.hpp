@@ -22,14 +22,13 @@ namespace gabe {
 
                 void _update_files_counter(const std::vector<std::string> &log_files);
 
-                void _rotate_file(core::Sink *sink);
-
             public:
                 SizeRotatingFileHandler();
                 SizeRotatingFileHandler(uint64_t size);
 
                 virtual void check_sink(core::Sink *sink) override;
-                virtual void handle(core::Sink *sink, const std::string &message) override;
+                virtual bool evaluate(core::Sink *sink, const std::string &message) override;
+                virtual std::string create_handled_file_name(const std::string &file_name) override;
             };
         }
     }

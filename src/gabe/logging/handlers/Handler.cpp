@@ -10,4 +10,6 @@ std::string gabe::logging::handlers::Handler::type() const {
 
 void gabe::logging::handlers::Handler::check_sink(core::Sink *sink) {}
 
-void gabe::logging::handlers::Handler::handle(core::Sink *sink, const std::string &message) {}
+bool gabe::logging::handlers::Handler::evaluate(core::Sink *sink, const std::string &message) { return false; }
+
+std::string gabe::logging::handlers::Handler::create_handled_file_name(const std::string &file_name) { return file_name; }

@@ -59,6 +59,15 @@ bool gabe::logging::core::Sink::should_flush(const std::string &message) {
     return false;
 }
 
+void gabe::logging::core::Sink::rotate_file(const std::string &new_name) {
+    flush();
+    close_file();
+
+    std::string new_full_path = std::filesystem::path(get_file_directory()) / new_name;
+
+    std::rename(get_file_full_path().c_str(), new_full_path.c_str());
+}
+
 uint32_t gabe::logging::core::Sink::file_size() {
     if (_file.is_open())
         return _file.tellp();

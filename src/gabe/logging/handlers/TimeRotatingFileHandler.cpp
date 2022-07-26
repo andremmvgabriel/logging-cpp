@@ -59,9 +59,46 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::_month_evaluation(const s
     else return false;
 }
 
-void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::filesystem::path file_path(sink->get_file_directory());
-    std::filesystem::path file_name(sink->get_file_name());
+void gabe::logging::handlers::TimeRotatingFileHandler::check_sink(core::Sink *sink) {
+    struct stat result;
+
+    if(stat(sink->get_file_full_path().c_str(), &result)==0) {
+        _time_epoch = result.st_mtime;
+    } else {
+        _time_epoch = std::time(nullptr);
+    }
+    localtime_r(&_time_epoch, &_time_calendar);
+}
+
+bool gabe::logging::handlers::TimeRotatingFileHandler::evaluate(core::Sink *sink, const std::string &message) {
+    std::time_t time_epoch = std::time(nullptr);
+    std::tm time_calendar;
+
+    localtime_r(&time_epoch, &time_calendar);
+
+    // Checks if the current time somehow went back
+    if (time_epoch <= _time_epoch) return false;
+
+    // Makes the specified evaluation
+    if ((*this.*_evaluation_methods[_rotation])(time_calendar))
+        return true;
+
+    return false;
+}
+
+std::string gabe::logging::handlers::TimeRotatingFileHandler::create_handled_file_name(const std::string &file_name) {
+    std::filesystem::path name(file_name);
+
+    std::string pre_name = name.stem();
+    std::string pos_name = name.extension();
+
+    std::size_t position = pre_name.find(".");
+
+    while(position != -1) {
+        pre_name = std::filesystem::path(pre_name).stem();
+        pos_name = std::string(std::filesystem::path(pos_name).extension()) + pos_name;
+        position = pre_name.find(".");
+    }
 
     std::string year = fmt::format("{:04}", _time_calendar.tm_year + 1900);
     std::string month = fmt::format("{:02}", _time_calendar.tm_mon + 1);
@@ -71,48 +108,11 @@ void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *
     std::string minutes = fmt::format("{:02}", _time_calendar.tm_min);
 
     // Creates the new name
-    std::string new_name = std::string(file_path / file_name.stem()) + "." + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + std::string(file_name.extension());
-
-    rename(sink->get_file_full_path().data(), new_name.data());
+    std::string new_name = pre_name + "." + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + pos_name;
 
     // Updates the time
     _time_epoch = std::time(nullptr);
     localtime_r(&_time_epoch, &_time_calendar);
-}
 
-void gabe::logging::handlers::TimeRotatingFileHandler::check_sink(core::Sink *sink) {
-    struct stat result;
-
-    if(stat(sink->get_file_full_path().c_str(), &result)==0)
-        _time_epoch = result.st_mtime;
-        localtime_r(&_time_epoch, &_time_calendar);
-
-        std::time_t time_epoch = std::time(nullptr);
-        std::tm time_calendar;
-        localtime_r(&time_epoch, &time_calendar);
-
-        // Makes the specified evaluation
-        if ((*this.*_evaluation_methods[_rotation])(time_calendar)) {
-            sink->flush();
-            sink->close_file();
-            _rotate_file(sink);
-        }
-}
-
-void gabe::logging::handlers::TimeRotatingFileHandler::handle(core::Sink *sink, const std::string &message) {
-    std::time_t time_epoch = std::time(nullptr);
-    std::tm time_calendar;
-
-    localtime_r(&time_epoch, &time_calendar);
-
-    // Checks if the current time somehow went back
-    if (time_epoch <= _time_epoch) return;
-
-    // Makes the specified evaluation
-    if ((*this.*_evaluation_methods[_rotation])(time_calendar)) {
-        sink->flush();
-        sink->close_file();
-        _rotate_file(sink);
-        sink->open_file();
-    }
+    return new_name;
 }

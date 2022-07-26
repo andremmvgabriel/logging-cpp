@@ -44,17 +44,20 @@ gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO), _parent(
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, Logger* parent) : _severity(SeverityLevel::INFO), _parent(parent) {
-    _sink = new Sink(location, name + ".txt");
+    std::string filtered_name = _filter_logger_name(name);
+    _sink = new Sink(location, filtered_name + ".txt");
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity) : _severity(severity), _parent(nullptr) {
-    _sink = new Sink(location, name + ".txt");
+    std::string filtered_name = _filter_logger_name(name);
+    _sink = new Sink(location, filtered_name + ".txt");
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity, Logger *parent) : _severity(severity), _parent(parent) {
-    _sink = new Sink(location, name + ".txt");
+    std::string filtered_name = _filter_logger_name(name);
+    _sink = new Sink(location, filtered_name + ".txt");
     _setup_internal_formatters();
 }
 
@@ -63,6 +66,17 @@ gabe::logging::core::Logger::~Logger() {
     _delete_handlers();
     _delete_formatters();
     _parent = nullptr;
+}
+
+std::string gabe::logging::core::Logger::_filter_logger_name(std::string name) {
+    std::size_t position = name.find(".");
+
+    while(position != -1) {
+        name[position] = '-';
+        position = name.find(".");
+    }
+
+    return name;
 }
 
 void gabe::logging::core::Logger::_setup_internal_formatters() {
@@ -160,7 +174,8 @@ std::string gabe::logging::core::Logger::get_logs_location() {
 
 void gabe::logging::core::Logger::set_logs_file_name(const std::string &file_name) {
     std::lock_guard<std::mutex> lock_guard(_log_mutex);
-    _sink->set_file_name(file_name + ".txt");
+    std::string filtered_name = _filter_logger_name(file_name);
+    _sink->set_file_name(filtered_name + ".txt");
     for (auto handler : _handlers) {
         handler.second->check_sink(_sink);
     }

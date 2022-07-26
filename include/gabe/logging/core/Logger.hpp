@@ -74,6 +74,8 @@ namespace gabe {
                 std::mutex _log_mutex;
             
             protected:
+                std::string _filter_logger_name(std::string name);
+
                 void _setup_internal_formatters();
                 void _delete_sink();
                 void _delete_handlers();

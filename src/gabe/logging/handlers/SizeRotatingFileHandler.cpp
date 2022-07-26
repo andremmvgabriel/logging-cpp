@@ -7,38 +7,6 @@ gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler() : Ha
 
 gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler(uint64_t size) : Handler("SizeRotatingFileHandler"), _size(size) {}
 
-std::vector<std::string> gabe::logging::handlers::SizeRotatingFileHandler::_find(std::string target, const std::string &key) {
-    std::vector<std::string> parts;
-
-    std::size_t position = target.find(key);
-
-    while (position != -1) {
-        parts.emplace_back(std::string(&target[0], &target[position]));
-        target = std::string(&target[position + 1]);
-        position = target.find(key);
-    }
-
-    parts.push_back(target);
-
-    return parts;
-}
-
-std::string gabe::logging::handlers::SizeRotatingFileHandler::_find_and_get_before(const std::string &target, const std::string &key, bool last) {
-    std::size_t position = last ? target.find_last_of(key) : target.find_first_of(key);
-
-    if (position != -1) return std::string(&target[0], &target[position]);
-
-    return target;
-}
-
-std::string gabe::logging::handlers::SizeRotatingFileHandler::_find_and_get_after(const std::string &target, const std::string &key, bool last) {
-    std::size_t position = last ? target.find_last_of(key) : target.find_first_of(key);
-
-    if (position != -1) return std::string(&target[position + 1]);
-
-    return target;
-}
-
 std::string gabe::logging::handlers::SizeRotatingFileHandler::_find_last_and_get_after(const std::string &target, const std::string &key) {
     std::size_t position = target.find_last_of(key);
 

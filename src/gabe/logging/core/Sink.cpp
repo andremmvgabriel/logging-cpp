@@ -4,10 +4,18 @@
 
 gabe::logging::core::Sink::Sink() : _file_directory(""), _file_name("log.txt") {
     _buffer = new char[_buffer_size];
+
+    if (std::filesystem::exists(get_file_full_path())) {
+        open_file();
+    }
 }
 
 gabe::logging::core::Sink::Sink(const std::string &file_directory, const std::string &file_name) : _file_directory(file_directory), _file_name(file_name) {
     _buffer = new char[_buffer_size];
+
+    if (std::filesystem::exists(get_file_full_path())) {
+        open_file();
+    }
 }
 
 gabe::logging::core::Sink::~Sink() {
@@ -52,7 +60,10 @@ bool gabe::logging::core::Sink::should_flush(const std::string &message) {
 }
 
 uint32_t gabe::logging::core::Sink::file_size() {
-    return _file.tellp();
+    if (_file.is_open())
+        return _file.tellp();
+    else
+        return 0;
 }
 
 uint32_t gabe::logging::core::Sink::buffer_size() {
@@ -64,7 +75,19 @@ uint32_t gabe::logging::core::Sink::buffer_max_size() {
 }
 
 void gabe::logging::core::Sink::set_file_name(const std::string &name) {
-    _file_name = name;
+    if (_file.is_open()) {
+        close_file();
+        
+        // Caches the old name and the new one
+        std::string old_name = get_file_full_path();
+        _file_name = name;
+        std::string new_name = get_file_full_path();
+
+        rename(old_name.data(), new_name.data());
+        open_file();
+    } else {
+        _file_name = name;
+    }
 }
 
 std::string gabe::logging::core::Sink::get_file_name() {
@@ -72,13 +95,25 @@ std::string gabe::logging::core::Sink::get_file_name() {
 }
 
 void gabe::logging::core::Sink::set_file_directory(const std::string &directory) {
-    _file_directory = directory;
+    if (_file.is_open()) {
+        close_file();
+        
+        // Caches the old name and the new one
+        std::string old_name = get_file_full_path();
+        _file_directory = directory;
+        std::string new_name = get_file_full_path();
+
+        rename(old_name.data(), new_name.data());
+        open_file();
+    } else {
+        _file_directory = directory;
+    }
 }
 
 std::string gabe::logging::core::Sink::get_file_directory() {
-    return _file_directory;
+    return std::filesystem::absolute(_file_directory);
 }
 
 std::string gabe::logging::core::Sink::get_file_full_path() {
-    return (_file_directory + "/" + _file_name);
+    return std::filesystem::absolute(_file_directory) / _file_name;
 }

@@ -1,6 +1,7 @@
 #include <gabe/logging/handlers/TimeRotatingFileHandler.hpp>
 
 #include <fmt/format.h>
+#include <filesystem>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -59,7 +60,8 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::_month_evaluation(const s
 }
 
 void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *sink) {
-    std::string name = _find_and_get_before(sink->get_file_name(), ".", true);
+    std::filesystem::path file_path(sink->get_file_directory());
+    std::filesystem::path file_name(sink->get_file_name());
 
     std::string year = fmt::format("{:04}", _time_calendar.tm_year + 1900);
     std::string month = fmt::format("{:02}", _time_calendar.tm_mon + 1);
@@ -68,9 +70,8 @@ void gabe::logging::handlers::TimeRotatingFileHandler::_rotate_file(core::Sink *
     std::string hour = fmt::format("{:02}", _time_calendar.tm_hour);
     std::string minutes = fmt::format("{:02}", _time_calendar.tm_min);
 
-    std::string new_name = sink->get_file_directory() + "/" + name + "_" + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + "m";
-
-    if (sink->get_file_name().find(".") != -1) new_name += "." + _find_and_get_after(sink->get_file_name(), ".", true);
+    // Creates the new name
+    std::string new_name = std::string(file_path / file_name.stem()) + "." + year + "-" + month + "-" + day + "_" + hour + "h" + minutes + std::string(file_name.extension());
 
     rename(sink->get_file_full_path().data(), new_name.data());
 
@@ -95,7 +96,6 @@ void gabe::logging::handlers::TimeRotatingFileHandler::check_sink(core::Sink *si
             sink->flush();
             sink->close_file();
             _rotate_file(sink);
-            sink->open_file();
         }
 }
 

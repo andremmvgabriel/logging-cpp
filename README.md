@@ -14,8 +14,8 @@ This logging library is based on Python's logging library working mechanisms, wh
 
 This library was developed to be used in both Linux and Windows platforms.
 
-However, it has only been tested in the Linux platform. Windows testing will be done as soon as possible.
+However, it has only been tested on the Linux platform. Windows testing will be done as soon as possible.
 
 # III. How to use it
 
-This logging library is very simple to be used. If you want to learn a bit more on the multiple usage cases, please access the examples within the examples directory. There are several comments through the code that should guide you. Have fun!
+This logging library is very simple to be used. If you want to learn a bit more about the multiple usage cases, please access the examples within the examples directory. There are several comments through the code that should guide you. Have fun!

@@ -1,6 +1,7 @@
 - [I. Introduction](#i-introduction)
 - [II. Platforms](#ii-platforms)
-- [III. How to use it](#iii-how-to-use-it)
+- [III. Requirements](#iii-requirements)
+- [IV. How to use it](#iv-how-to-use-it)
 
 ----------------------
 
@@ -16,6 +17,14 @@ This library was developed to be used in both Linux and Windows platforms.
 
 However, it has only been tested on the Linux platform. Windows testing will be done as soon as possible.
 
-# III. How to use it
+# III. Requirements
+
+This library was developed using C++20 to make use of the newest methodologies.
+
+* C++20
+* [fmt](https://github.com/fmtlib/fmt)
+* [google testing](https://github.com/google/googletest)
+
+# IV. How to use it
 
 This logging library is very simple to be used. If you want to learn a bit more about the multiple usage cases, please access the examples within the examples directory. There are several comments through the code that should guide you. Have fun!

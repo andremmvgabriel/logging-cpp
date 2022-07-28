@@ -12,7 +12,7 @@ namespace gabe {
     namespace logging {
         class Manager
         {
-        public:
+        private:
             std::unordered_map<std::string, core::Logger*> _loggers;
 
             std::mutex _manager_mutex;
@@ -22,6 +22,7 @@ namespace gabe {
             bool _default_chained_logs;
             SeverityLevel _default_severity;
             std::string _default_logs_directory;
+            std::string _default_log_layout;
         
         protected:
             std::string _find_parent_logger_name(const std::string &logger_name);
@@ -34,6 +35,7 @@ namespace gabe {
             void set_default_chained_logs(bool allow_chained);
             void set_default_severity(const SeverityLevel &severity);
             void set_default_logs_directory(const std::string &path);
+            void set_default_log_layout(const std::string &log_layout);
 
             template<typename FormatterT>
             void add_formatter(const FormatterT &formatter) {

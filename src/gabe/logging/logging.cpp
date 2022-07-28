@@ -22,6 +22,10 @@ void SET_DEFAULT_LOGS_DIRECTORY(const std::string &path) {
     manager.set_default_logs_directory(path);
 }
 
+void SET_DEFAULT_LOG_LAYOUT(const std::string &log_layout) {
+    manager.set_default_log_layout(log_layout);
+}
+
 gabe::logging::LoggerHandler GET_LOGGER(const std::string &logger_name) {
     return manager.get_logger(logger_name);
 }

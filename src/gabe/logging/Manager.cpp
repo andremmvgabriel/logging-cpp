@@ -1,7 +1,7 @@
 #include <gabe/logging/Manager.hpp>
 #include <filesystem>
 
-gabe::logging::Manager::Manager() : _default_logger("main"), _default_chained_logs(true), _default_severity(SeverityLevel::INFO) {
+gabe::logging::Manager::Manager() : _default_logger("main"), _default_chained_logs(true), _default_severity(SeverityLevel::INFO), _default_log_layout("[%sev] %msg") {
     set_default_logs_directory(std::string(std::filesystem::current_path()));
 }
 
@@ -25,6 +25,10 @@ void gabe::logging::Manager::set_default_severity(const SeverityLevel &severity)
 
 void gabe::logging::Manager::set_default_logs_directory(const std::string &path) {
     _default_logs_directory = path;
+}
+
+void gabe::logging::Manager::set_default_log_layout(const std::string &log_layout) {
+    _default_log_layout = log_layout;
 }
 
 std::string gabe::logging::Manager::_find_parent_logger_name(const std::string &logger_name) {
@@ -55,6 +59,7 @@ void gabe::logging::Manager::setup_logger(const std::string &logger_name, core::
 
     core::Logger* logger = new core::Logger(_default_logs_directory, logger_name, _default_severity, parent);
     logger->set_chained_logs(_default_chained_logs);
+    logger->set_log_layout(_default_log_layout);
 
     _loggers[logger_name] = logger;
 }

@@ -19,6 +19,33 @@ namespace gabe {
 
             core::Logger* ptr();
 
+            void set_logs_file_name(const std::string &file_name);
+            std::string get_logs_file_name();
+
+            void set_chained_logs(bool active);
+            bool get_chained_logs();
+
+            void set_severity(const SeverityLevel &severity);
+            SeverityLevel get_severity();
+
+            void set_logs_location(const std::string &location);
+            std::string get_logs_location();
+
+            void set_log_layout(const std::string &log_layout);
+            std::string get_log_layout();
+
+            void basic_config(const SeverityLevel &severity, const std::string &location, const std::string &file_name);
+
+            template<typename FormatterT>
+            void add_formatter(const FormatterT &formatter) {
+                _logger->add_formatter(formatter);
+            }
+
+            template<typename HandlerT>
+            void add_handler(const HandlerT& handler) {
+                _logger->add_handler(handler);
+            }
+
             template<typename ... Args>
             void log(const gabe::logging::SeverityLevel &severity, const std::string &message, Args... args) {
                 _logger->log(severity, message, args...);
@@ -52,33 +79,6 @@ namespace gabe {
             template<typename ... Args>
             void fatal(const std::string &message, Args... args) {
                 _logger->fatal(message, args...);
-            }
-
-            void set_log_layout(const std::string &log_layout);
-            std::string get_log_layout();
-
-            void set_chained_logs(bool active);
-            bool get_chained_logs();
-
-            void set_severity(const SeverityLevel &severity);
-            SeverityLevel get_severity();
-
-            void set_logs_location(const std::string &location);
-            std::string get_logs_location();
-
-            void set_logs_file_name(const std::string &file_name);
-            std::string get_logs_file_name();
-
-            void basic_config(const SeverityLevel &severity, const std::string &location, const std::string &file_name);
-
-            template<typename FormatterT>
-            void add_formatter(const FormatterT &formatter) {
-                _logger->add_formatter(formatter);
-            }
-
-            template<typename HandlerT>
-            void add_handler(const HandlerT& handler) {
-                _logger->add_handler(handler);
             }
         };
     }

@@ -28,7 +28,7 @@ extern gabe::logging::Manager* _get_internal_manager();
 void SET_DEFAULT_LOGGER(const std::string &logger_name);
 
 /**
- * @brief Set the state of chained logs variable.
+ * @brief Set the default state of chained logs variable.
  * 
  * Changes the default chained logs boolean value. This variable only affects the creation of new loggers and not the ones that already exist.
  * 
@@ -41,7 +41,7 @@ void SET_DEFAULT_CHAINED_LOGS(bool allow_chained);
  * 
  * Changes the default severity value. This variable only affects the creation of new loggers and not the ones that already exist.
  * 
- * @param severity 
+ * @param severity Default severity variable that will be used on new loggers creation.
  */
 void SET_DEFAULT_SEVERITY(const gabe::logging::SeverityLevel &severity);
 
@@ -50,7 +50,7 @@ void SET_DEFAULT_SEVERITY(const gabe::logging::SeverityLevel &severity);
  * 
  * Changes the default logs directory path. This variable only affects the creation of new loggers and not the ones that already exist.
  * 
- * @param path 
+ * @param path Default path variable that will be used on new loggers creation.
  */
 void SET_DEFAULT_LOGS_DIRECTORY(const std::string &path);
 
@@ -61,19 +61,19 @@ void SET_DEFAULT_LOGS_DIRECTORY(const std::string &path);
  * 
  * @note Log layouts should change depending on the formatters you are using. please check Formatters for a better understanding.
  * 
- * @param log_layout 
+ * @param log_layout Default log layout variable that will be used on new loggers creation.
  */
 void SET_DEFAULT_LOG_LAYOUT(const std::string &log_layout);
 
 /**
- * @brief Get the logger handler object.
+ * @brief Get a handler of the target logger.
  * 
  * Once called, the internal logging manager searches and returns a handler for the target logger.
  * 
  * @note If the specified logger does not exist, the internal manager ensures its creation (with the default settings) and returns it to you.
  * 
- * @param logger_name 
- * @return gabe::logging::LoggerHandler 
+ * @param logger_name Name of the target logger.
+ * @return gabe::logging::LoggerHandler Logger object as a handler object.
  */
 gabe::logging::LoggerHandler GET_LOGGER(const std::string &logger_name);
 

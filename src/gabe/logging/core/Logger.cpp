@@ -4,25 +4,25 @@
 Internal Formatters
 */
 
-gabe::logging::core::Logger::Severity::Severity() : Formatter("SeverityFormatter", "%sev") {}
+gabe::logging::core::Logger::SeverityFormatter::SeverityFormatter() : Formatter("SeverityFormatter", "%sev") {}
 
-void gabe::logging::core::Logger::Severity::set_severity(const SeverityLevel &severity) { _severity = severity; }
+void gabe::logging::core::Logger::SeverityFormatter::set_severity(const SeverityLevel &severity) { _severity = severity; }
 
-std::string gabe::logging::core::Logger::Severity::_format() {
+std::string gabe::logging::core::Logger::SeverityFormatter::_format() {
     return fmt::format("{:^7}", _formatting[_severity]);
 }
 
 
 
-gabe::logging::core::Logger::Message::Message() : Formatter("MessageFormatter", "%msg") {}
+gabe::logging::core::Logger::MessageFormatter::MessageFormatter() : Formatter("MessageFormatter", "%msg") {}
 
-void gabe::logging::core::Logger::Message::set_message(const std::string &message) { _message = message; }
+void gabe::logging::core::Logger::MessageFormatter::set_message(const std::string &message) { _message = message; }
 
-std::string gabe::logging::core::Logger::Message::_format() {
+std::string gabe::logging::core::Logger::MessageFormatter::_format() {
     return _message;
 }
 
-void gabe::logging::core::Logger::Message::format(std::string &message) {
+void gabe::logging::core::Logger::MessageFormatter::format(std::string &message) {
     std::string message_copy = message;
 
     Formatter::format(message);
@@ -80,8 +80,8 @@ std::string gabe::logging::core::Logger::_filter_logger_name(std::string name) {
 }
 
 void gabe::logging::core::Logger::_setup_internal_formatters() {
-    add_formatter(Severity());
-    add_formatter(Message());
+    add_formatter(SeverityFormatter());
+    add_formatter(MessageFormatter());
 }
 
 void gabe::logging::core::Logger::_delete_sink() {
@@ -110,9 +110,9 @@ void gabe::logging::core::Logger::_log(const SeverityLevel &severity, const std:
     std::string final_log_message = _log_layout;
 
     // Formatters
-    dynamic_cast<Severity*>(_formatters["SeverityFormatter"])->set_severity(severity);
+    dynamic_cast<SeverityFormatter*>(_formatters["SeverityFormatter"])->set_severity(severity);
 
-    dynamic_cast<Message*>(_formatters["MessageFormatter"])->set_message(message);
+    dynamic_cast<MessageFormatter*>(_formatters["MessageFormatter"])->set_message(message);
 
     for (auto formatter : _formatters) {
         formatter.second->format(final_log_message);

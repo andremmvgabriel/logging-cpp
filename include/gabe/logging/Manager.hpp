@@ -166,7 +166,7 @@ namespace gabe {
             /**
              * @brief Adds a file handler to the default logger.
              * 
-             * Adds a file handler object into the default logger. This handler must be a child of the HAndler abstract object.
+             * Adds a file handler object into the default logger. This handler must be a child of the Handler abstract object.
              * 
              * @tparam HandlerT Handler type.
              * @param handler Handler object.

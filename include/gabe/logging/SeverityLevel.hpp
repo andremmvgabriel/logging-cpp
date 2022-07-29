@@ -2,6 +2,11 @@
 
 namespace gabe {
     namespace logging {
+        /**
+         * @brief Severity Levels enumerator.
+         * 
+         * This enumerator contains all the logging severity levels allowed in the logging library.
+         */
         enum class SeverityLevel
         {
             TRACE   =   0b000001,

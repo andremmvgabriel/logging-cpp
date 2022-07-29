@@ -1,6 +1,6 @@
 #include <gabe/logging/LoggerHandler.hpp>
 
-gabe::logging::LoggerHandler::LoggerHandler() {}
+gabe::logging::LoggerHandler::LoggerHandler() : _logger(nullptr) {}
 
 gabe::logging::LoggerHandler::LoggerHandler(gabe::logging::core::Logger *logger) : _logger(logger) {}
 

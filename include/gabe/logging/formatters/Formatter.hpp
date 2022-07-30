@@ -8,7 +8,7 @@ namespace gabe {
             /**
              * @brief Abstract Formatter object.
              * 
-             * Every formatter object create should be extended from this class (or from a child that is extended already from this class).
+             * Every formatter object created should be extended from this class (or from a child that is extended already from this class).
              */
             class Formatter
             {            

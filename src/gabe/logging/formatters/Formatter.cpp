@@ -17,9 +17,12 @@ std::string gabe::logging::formatters::Formatter::key() const {
 }
 
 void gabe::logging::formatters::Formatter::format(std::string &message) {
+    // Searches the position where the formatting key is located.
     std::size_t key_pos = message.find(_key);
 
+    // Safety check in case the key isn't in the log layout.
     if (key_pos == -1) return;
     
+    // Formatting
     message = std::string(&message[0], &message[key_pos]) + _format() + std::string(&message[key_pos + _key.size()]);
 }

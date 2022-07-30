@@ -255,7 +255,7 @@ namespace gabe {
                 /**
                  * @brief Abstract method to format the log message.
                  * 
-                 * This method is meant to be overritten and design to include all the needed methods to format the log message.
+                 * This method is not meant to be overritten unless it is necessary to perform some extra steps before the actual formatting. If so, this function should be overritten and its additional behaviour inserted, finalizing with calling of the abstract function.
                  * 
                  * This function does not output the formatted log message. The log message is given as a reference instead, which allows its formatting on the given string.
                  */

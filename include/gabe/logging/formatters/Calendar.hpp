@@ -9,9 +9,25 @@
 namespace gabe {
     namespace logging {
         namespace formatters {
+            /**
+             * @brief Calendar Multi-Formatter object.
+             * 
+             * This class is meant to be instantiated and given to a Logger object. It's objective is to format log messages, adding calendar information to it. To be able to format the log message, the user has to make sure that log layout contains the calendar format keywords. These keywords are:
+             * 
+             * %year -> Adds the year from which the log was done. Result is a string of 4 digits. Example: 2022.
+             * %month -> Adds the number of the month from which the log was done. Result is a string of 2 digits. Example: 07 (July).
+             * %smonth -> Adds the name of the month from which the log was done. Result if a string of 3 characters. Example: jul (July).
+             * %day -> Adds the number of the day of the month from which the log was done. Result is a string of 2 digits. Example: 30.
+             * %week -> Adds the number of the week day from which the log was done. Result is a string of a single digit. Example: 1 (Monday).
+             * %sweek -> Adds the name of the week day from which the log was done. Result is a string of 3 characters. Example: mon (Monday).
+             */
             class Calendar : public MultiFormatter
             {
             protected:
+                /**
+                 * @brief Calendar Internal Formatter object.
+                 * 
+                 */
                 class InternalFormatter : public Formatter
                 {
                 protected:

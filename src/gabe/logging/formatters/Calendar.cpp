@@ -21,7 +21,9 @@ std::string gabe::logging::formatters::Calendar::Year::_get_year() {
 }
 
 std::string gabe::logging::formatters::Calendar::Year::_format() {
+    // Safety check
     if (!_calendar) return "";
+    
     return _get_year();
 }
 
@@ -40,7 +42,10 @@ std::string gabe::logging::formatters::Calendar::Month::_get_month_str() {
 }
 
 std::string gabe::logging::formatters::Calendar::Month::_format() {
+    // Safety check
     if (!_calendar) return "";
+
+    // Decides which way to format
     if (_key == "%month") return _get_month();
     else if (_key == "%smonth") return _get_month_str();
     return "";
@@ -57,7 +62,9 @@ std::string gabe::logging::formatters::Calendar::Day::_get_day() {
 }
 
 std::string gabe::logging::formatters::Calendar::Day::_format() {
+    // Safety check
     if (!_calendar) return "";
+
     return _get_day();
 }
 
@@ -76,7 +83,10 @@ std::string gabe::logging::formatters::Calendar::Week::_get_week_day_str() {
 }
 
 std::string gabe::logging::formatters::Calendar::Week::_format() {
+    // Safety check
     if (!_calendar) return "";
+
+    // Decides which way to format
     if (_key == "%week") return _get_week_day();
     else if (_key == "%sweek") return _get_week_day_str();
     return "";
@@ -89,6 +99,7 @@ Calendar Formatter
 */
 
 gabe::logging::formatters::Calendar::Calendar() : MultiFormatter("CalendarFormatter") {
+    // Creates all the needed internal formatters
     add_formatter( Year("%year", _calendar) );
     add_formatter( Month("%month", _calendar) );
     add_formatter( Month("%smonth", _calendar) );
@@ -102,8 +113,10 @@ gabe::logging::formatters::Calendar::~Calendar() {
 }
 
 void gabe::logging::formatters::Calendar::format(std::string &message) {
+    // Updates the calendar data structure.
     std::time_t epoch = std::time(nullptr);
     localtime_r(&epoch, _calendar);
 
+    // Proceeds to the log formatting
     MultiFormatter::format(message);
 }

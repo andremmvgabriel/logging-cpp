@@ -22,5 +22,5 @@ add_example( logging_with_handlers )
 add_custom_target ( examples
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/logs
 )
-message( STATUS ${examples_suit} )
+
 add_dependencies ( examples ${examples_suit} )

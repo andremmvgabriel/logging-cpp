@@ -55,7 +55,7 @@ namespace gabe {
                 Formatter(const std::string &type, const std::string &key);
 
                 /**
-                 * @brief Get the formatter type/name of the Formatter.
+                 * @brief Get the type/name of the Formatter.
                  * 
                  * @return std::string Formatter type/name.
                  */

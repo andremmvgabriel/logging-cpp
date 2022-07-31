@@ -8,26 +8,19 @@ function(add_example example_name)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         EXCLUDE_FROM_ALL 1
     )
-endfunction()
+    set( examples_suit ${examples_suit} ${example_name}.example PARENT_SCOPE )
+endfunction(add_example)
 
 # Examples
 add_example( simple_logging )
-list ( APPEND examples_bins simple_logging.example )
-
 add_example( logger_handler )
-list ( APPEND examples_bins logger_handler.example )
-
 add_example( chained_logging )
-list ( APPEND examples_bins chained_logging.example )
-
 add_example( logging_with_formatters )
-list ( APPEND examples_bins logging_with_formatters.example )
-
 add_example( logging_with_handlers )
-list ( APPEND examples_bins logging_with_handlers.example )
 
 # Creates a target flag for the example executables
 add_custom_target ( examples
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/logs # Creates the logs directory if the target is specified on build
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_SOURCE_DIR}/logs
 )
-add_dependencies (examples ${examples_bins})
+message( STATUS ${examples_suit} )
+add_dependencies ( examples ${examples_suit} )

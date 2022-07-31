@@ -8,10 +8,13 @@ gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler() : Ha
 gabe::logging::handlers::SizeRotatingFileHandler::SizeRotatingFileHandler(uint64_t size) : Handler("SizeRotatingFileHandler"), _size(size) {}
 
 std::string gabe::logging::handlers::SizeRotatingFileHandler::_find_last_and_get_after(const std::string &target, const std::string &key) {
+    // Checks the position of the given key in the given target string.
     std::size_t position = target.find_last_of(key);
 
+    // Gets the string sub part after the key, if existent
     if (position != -1) return std::string(&target[position + 1]);
 
+    // Returns the given target, since the key is not present
     return target;
 }
 
@@ -56,14 +59,18 @@ void gabe::logging::handlers::SizeRotatingFileHandler::_update_files_counter(con
 }
 
 void gabe::logging::handlers::SizeRotatingFileHandler::check_sink(core::Sink *sink) {
+    // Gets the list of log files in the log files directory
     std::vector<std::string> log_files = _find_log_files(sink->get_file_directory(), sink->get_file_name());
 
+    // Analyses the log files and updates the files counter
     _update_files_counter(log_files);
 }
 
 bool gabe::logging::handlers::SizeRotatingFileHandler::evaluate(core::Sink *sink, const std::string &message) {
+    // Gets the total size in the log file + buffer sink
     uint64_t total_size = sink->file_size() + sink->buffer_size();
 
+    // Returns true if this size exceeds the maximum size of the file
     if (total_size >= _size)
         return true;
     

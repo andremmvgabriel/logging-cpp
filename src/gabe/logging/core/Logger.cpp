@@ -23,10 +23,13 @@ std::string gabe::logging::core::Logger::MessageFormatter::_format() {
 }
 
 void gabe::logging::core::Logger::MessageFormatter::format(std::string &message) {
+    // Copies the given message
     std::string message_copy = message;
 
+    // Formats the message as expected
     Formatter::format(message);
 
+    // Adds the message to the end of the formatting in case the formatting is is not present
     if (message == message_copy) {
         message = message + " " + _message;
     }
@@ -39,25 +42,43 @@ Logger
 */
 
 gabe::logging::core::Logger::Logger() : _severity(SeverityLevel::INFO), _parent(nullptr) {
+    // Creates the sink
     _sink = new Sink("", "log.txt");
+
+    // Setus the internal formatters
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, Logger* parent) : _severity(SeverityLevel::INFO), _parent(parent) {
+    // Filters the log name
     std::string filtered_name = _filter_logger_name(name);
+
+    // Creates the sink
     _sink = new Sink(location, filtered_name + ".txt");
+
+    // Setus the internal formatters
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity) : _severity(severity), _parent(nullptr) {
+    // Filters the log name
     std::string filtered_name = _filter_logger_name(name);
+
+    // Creates the sink
     _sink = new Sink(location, filtered_name + ".txt");
+
+    // Setus the internal formatters
     _setup_internal_formatters();
 }
 
 gabe::logging::core::Logger::Logger(const std::string &location, const std::string &name, const gabe::logging::SeverityLevel &severity, Logger *parent) : _severity(severity), _parent(parent) {
+    // Filters the log name
     std::string filtered_name = _filter_logger_name(name);
+
+    // Creates the sink
     _sink = new Sink(location, filtered_name + ".txt");
+
+    // Setus the internal formatters
     _setup_internal_formatters();
 }
 
@@ -69,8 +90,8 @@ gabe::logging::core::Logger::~Logger() {
 }
 
 std::string gabe::logging::core::Logger::_filter_logger_name(std::string name) {
+    // Replaces every "." found with a "-"
     std::size_t position = name.find(".");
-
     while(position != -1) {
         name[position] = '-';
         position = name.find(".");
@@ -85,6 +106,7 @@ void gabe::logging::core::Logger::_setup_internal_formatters() {
 }
 
 void gabe::logging::core::Logger::_delete_sink() {
+    // Makes sure to flush before deleting the sink
     _sink->flush();
     delete _sink;
     _sink = nullptr;
@@ -103,10 +125,13 @@ void gabe::logging::core::Logger::_delete_formatters() {
 }
 
 void gabe::logging::core::Logger::_log(const SeverityLevel &severity, const std::string &message) {
+    // Locks the mutex
     std::lock_guard<std::mutex> lock_guard(_log_mutex);
 
+    // Does not log if the severity level is not enough
     if ( (uint8_t)severity < (uint8_t)_severity ) return;
 
+    // Starts the message to log with the log layout
     std::string final_log_message = _log_layout;
 
     // Formatters
@@ -180,8 +205,13 @@ gabe::logging::SeverityLevel gabe::logging::core::Logger::get_severity() {
 }
 
 void gabe::logging::core::Logger::set_logs_location(const std::string &location) {
+    // Logs the mutex
     std::lock_guard<std::mutex> lock_guard(_log_mutex);
+
+    // Changes the file directory
     _sink->set_file_directory(location);
+    
+    // Makes all the handlers check the sink
     for (auto handler : _handlers) {
         handler.second->check_sink(_sink);
     }
@@ -192,9 +222,16 @@ std::string gabe::logging::core::Logger::get_logs_location() {
 }
 
 void gabe::logging::core::Logger::set_logs_file_name(const std::string &file_name) {
+    // Logs the mutex
     std::lock_guard<std::mutex> lock_guard(_log_mutex);
+
+    // Filter the new logger name
     std::string filtered_name = _filter_logger_name(file_name);
+
+    // Changes the file name
     _sink->set_file_name(filtered_name + ".txt");
+
+    // Makes all the handlers check the sink
     for (auto handler : _handlers) {
         handler.second->check_sink(_sink);
     }

@@ -2,6 +2,9 @@
 - [II. Platforms](#ii-platforms)
 - [III. Requirements](#iii-requirements)
 - [IV. How to use it](#iv-how-to-use-it)
+  - [Build and run examples](#build-and-run-examples)
+  - [Build and run tests](#build-and-run-tests)
+- [V. Notes](#v-notes)
 
 ----------------------
 
@@ -28,3 +31,17 @@ This library was developed using C++20 to make use of the newest methodologies.
 # IV. How to use it
 
 This logging library is very simple to be used. If you want to learn a bit more about the multiple usage cases, please access the examples within the examples directory. There are several comments through the code that should guide you. Have fun!
+
+## Build and run examples
+
+To build the examples scripts execute the command `cmake --build . --target examples`. Once done, the examples executables are created in the examples directory with a ".example" termination/extension.
+
+To run the example simply execute the command `./name_of_example.example`.
+
+## Build and run tests
+
+To build the tests scripts execute the command `cmake --build . --target tests`. Once done, the examples executables are created and instantly run. The console/terminal should present the results of the tests.
+
+# V. Notes
+
+Some tests still have to created, and others updated.

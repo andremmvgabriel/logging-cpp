@@ -257,6 +257,8 @@ namespace gabe {
                  * 
                  * This method is not meant to be overritten unless it is necessary to perform some extra steps before the actual formatting. If so, this function should be overritten and its additional behaviour inserted, finalizing with calling of the abstract function.
                  * 
+                 * In the current case, the additional behaviour is the update of the private internal member attribute: Pointer to the calendar data structure.
+                 * 
                  * This function does not output the formatted log message. The log message is given as a reference instead, which allows its formatting on the given string.
                  */
                 virtual void format(std::string &message) override;

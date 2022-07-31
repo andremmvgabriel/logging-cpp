@@ -12,7 +12,7 @@ namespace gabe {
             /**
              * @brief Size Rotating File handler object.
              * 
-             * This class is responsible for a handling the logger log files based on their size.
+             * This class is responsible for handling the logger log files based on their size.
              */
             class SizeRotatingFileHandler : public Handler
             {

@@ -9,7 +9,7 @@ namespace gabe {
             /**
              * @brief Console Standard Output handler object.
              * 
-             * This class is responsible for a printing every log message into a console/terminal.
+             * This class is responsible for printing every log message into a console/terminal.
              */
             class ConsoleStdOutHandler : public Handler
             {

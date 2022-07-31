@@ -18,22 +18,6 @@ gabe::logging::handlers::TimeRotatingFileHandler::TimeRotatingFileHandler(const 
     localtime_r(&_time_epoch, &_time_calendar);
 }
 
-std::string gabe::logging::handlers::TimeRotatingFileHandler::_find_and_get_before(const std::string &target, const std::string &key, bool last) {
-    std::size_t position = last ? target.find_last_of(key) : target.find_first_of(key);
-
-    if (position != -1) return std::string(&target[0], &target[position]);
-
-    return target;
-}
-
-std::string gabe::logging::handlers::TimeRotatingFileHandler::_find_and_get_after(const std::string &target, const std::string &key, bool last) {
-    std::size_t position = last ? target.find_last_of(key) : target.find_first_of(key);
-
-    if (position != -1) return std::string(&target[position + 1]);
-
-    return target;
-}
-
 bool gabe::logging::handlers::TimeRotatingFileHandler::_minute_evaluation(const std::tm &time_calendar) {
     if (_time_calendar.tm_min != time_calendar.tm_min) return true;
     else return false;
@@ -60,20 +44,24 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::_month_evaluation(const s
 }
 
 void gabe::logging::handlers::TimeRotatingFileHandler::check_sink(core::Sink *sink) {
+    // Structure needed to get the time of the last modification of the file
     struct stat result;
 
+    // Updates the time epoch with the last file modification date, otherwise gets the current date
     if(stat(sink->get_file_full_path().c_str(), &result)==0) {
         _time_epoch = result.st_mtime;
     } else {
         _time_epoch = std::time(nullptr);
     }
+
+    // Updates the calendar data structure
     localtime_r(&_time_epoch, &_time_calendar);
 }
 
 bool gabe::logging::handlers::TimeRotatingFileHandler::evaluate(core::Sink *sink, const std::string &message) {
+    // Gets the current time and gets the calendar data structure from it
     std::time_t time_epoch = std::time(nullptr);
     std::tm time_calendar;
-
     localtime_r(&time_epoch, &time_calendar);
 
     // Checks if the current time somehow went back
@@ -87,23 +75,30 @@ bool gabe::logging::handlers::TimeRotatingFileHandler::evaluate(core::Sink *sink
 }
 
 std::string gabe::logging::handlers::TimeRotatingFileHandler::create_handled_file_name(const std::string &file_name) {
+    // Gets the time as a filesystem path variable
     std::filesystem::path name(file_name);
 
+    // Separates the filename of its extension
     std::string pre_name = name.stem();
     std::string pos_name = name.extension();
 
+    // Finds the last "." so the handler puts the date after the actual logfile name
     std::size_t position = pre_name.find(".");
-
     while(position != -1) {
+        // Removes other handler substring
         pre_name = std::filesystem::path(pre_name).stem();
+
+        // Adds the other handler substring to the pos name
         pos_name = std::string(std::filesystem::path(pos_name).extension()) + pos_name;
+
+        // Keeps trying to find more "."s
         position = pre_name.find(".");
     }
 
+    // Gets all the needed time variables
     std::string year = fmt::format("{:04}", _time_calendar.tm_year + 1900);
     std::string month = fmt::format("{:02}", _time_calendar.tm_mon + 1);
     std::string day = fmt::format("{:02}", _time_calendar.tm_mday);
-
     std::string hour = fmt::format("{:02}", _time_calendar.tm_hour);
     std::string minutes = fmt::format("{:02}", _time_calendar.tm_min);
 
